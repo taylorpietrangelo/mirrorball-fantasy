@@ -1,0 +1,858 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Mirrorball Fantasy — Commissioner Portal</title>
+<style>
+:root{--navy:#071a3a;--blue:#126fc2;--electric:#29b6f6;--ice:#eaf7ff;--line:#d8e8f5;--text:#10203d;--muted:#64748b;--white:#fff;--gold:#ffd166;--danger:#b42318}
+*{box-sizing:border-box}
+body{margin:0;font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:var(--text);background:radial-gradient(circle at 10% 0,#dff5ff,transparent 30%),radial-gradient(circle at 90% 10%,#dfe9ff,transparent 28%),#f5faff}
+header{position:sticky;top:0;z-index:20;background:#071a3aee;backdrop-filter:blur(12px);color:#fff;padding:14px 4vw;display:flex;align-items:center;justify-content:space-between;gap:16px}
+.logo{font-size:1.3rem;font-weight:950}.logo span{color:var(--electric)}
+nav{display:flex;gap:5px;flex-wrap:wrap}nav button{background:transparent;color:#dcecff;border:0;border-radius:10px;padding:9px 11px;font-weight:850;cursor:pointer}nav button.active,nav button:hover{background:#ffffff18;color:#fff}
+main{max-width:1240px;margin:auto;padding:25px 22px 70px}.hero{display:grid;grid-template-columns:1.3fr .7fr;gap:18px;margin-bottom:20px}
+.heroMain{padding:36px;background:linear-gradient(135deg,#06183a,#0d5fae);color:white;border-radius:28px;position:relative;overflow:hidden;box-shadow:0 20px 60px #08295b25}.heroMain:after{content:"🪩";position:absolute;right:3%;top:-25px;font-size:170px;opacity:.16}.kicker{color:#aee8ff;text-transform:uppercase;letter-spacing:.15em;font-weight:900;font-size:.72rem}h1{font-size:clamp(2.6rem,6vw,5rem);line-height:.9;margin:14px 0}.heroMain p{max-width:650px;color:#e7f5ff}.heroBtns{display:flex;gap:9px;flex-wrap:wrap;margin-top:22px}
+button.primary{background:linear-gradient(135deg,var(--electric),var(--blue));color:#fff;border:0;border-radius:11px;padding:11px 16px;font-weight:900;cursor:pointer}
+.heroBtns button:not(.primary){background:#fff;color:var(--navy);border:0;border-radius:11px;padding:11px 16px;font-weight:900;cursor:pointer}
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:12px}.stat,.card{background:#ffffffdf;border:1px solid #fff;box-shadow:0 14px 40px #14386612;border-radius:22px}.stat{padding:19px}.stat b{display:block;font-size:1.9rem}.stat small,.sub{color:var(--muted);font-size:.78rem}
+.grid{display:grid;grid-template-columns:1.18fr .82fr;gap:18px}.card{padding:21px;margin-bottom:18px}h2{margin:0 0 14px;font-size:1.15rem}
+.leader{display:flex;align-items:center;gap:12px;padding:13px 4px;border-bottom:1px solid var(--line)}.rank{font-weight:950;width:25px}.grow{flex:1}.pts{font-weight:950;color:var(--blue)}.bar{height:7px;background:#eaf1f7;border-radius:99px;overflow:hidden;margin-top:7px}.bar i{display:block;height:100%;background:linear-gradient(90deg,var(--electric),var(--blue));border-radius:99px}
+.cast{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}.couple{padding:14px;border:1px solid var(--line);border-radius:17px;background:linear-gradient(145deg,#fff,#f5fbff)}.couple h3{margin:6px 0 3px;font-size:1rem}.score{float:right;color:var(--blue);font-weight:900}.tag{display:inline-block;font-size:.68rem;font-weight:900;border-radius:99px;padding:4px 8px;background:var(--ice);color:#1465a9}
+.table{width:100%;border-collapse:collapse;font-size:.82rem}.table th,.table td{padding:9px 7px;border-bottom:1px solid var(--line);text-align:right}.table th:first-child,.table td:first-child{text-align:left}.table th{color:var(--muted);font-size:.7rem;text-transform:uppercase}.total{font-weight:950;color:var(--blue)}
+.draft{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.team{border:1px solid var(--line);border-radius:16px;overflow:hidden}.team h3{margin:0;padding:12px;background:var(--navy);color:white;font-size:.9rem}.pick{padding:11px;border-bottom:1px solid var(--line);font-size:.82rem}.pick span{display:block;color:var(--muted);font-size:.68rem}
+.form{display:grid;grid-template-columns:1fr 1fr;gap:10px}.form3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.full{grid-column:1/-1}
+input,select{width:100%;padding:11px;border:1px solid var(--line);border-radius:11px;font:inherit;background:white}
+.smallbtn{padding:7px 10px;border:1px solid var(--line);background:#fff;border-radius:9px;font-weight:800;cursor:pointer}.danger{color:var(--danger);background:#fff4f3}.success{color:#087443;background:#effcf7}
+.scoreRows{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}.scoreRows input{text-align:center;font-weight:900}
+.scoreRow{display:flex;justify-content:space-between;gap:10px;padding:10px 0;border-bottom:1px solid var(--line)}.empty{color:var(--muted);font-style:italic}
+.section{display:none}.section.active{display:block}.portalShell{display:grid;grid-template-columns:215px 1fr;gap:18px}.portalNav{background:var(--navy);color:#dcecff;border-radius:20px;padding:10px;height:max-content;position:sticky;top:84px}.portalNav button{width:100%;text-align:left;background:transparent;color:#dcecff;border:0;padding:11px;border-radius:10px;font-weight:850;cursor:pointer}.portalNav button.active,.portalNav button:hover{background:#ffffff15;color:#fff}
+.portalPage{display:none}.portalPage.active{display:block}.portalHeader{display:flex;justify-content:space-between;gap:12px;align-items:center;margin-bottom:13px}.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:11px}.kpi{padding:15px;border:1px solid var(--line);border-radius:16px;background:linear-gradient(145deg,#fff,#f2f9ff)}.kpi b{display:block;font-size:1.65rem}.kpi span{font-size:.72rem;color:var(--muted)}
+.adminTable{width:100%;border-collapse:collapse}.adminTable th,.adminTable td{padding:10px 7px;border-bottom:1px solid var(--line);text-align:left;font-size:.82rem}.adminTable th{font-size:.7rem;color:var(--muted);text-transform:uppercase}
+.setting{display:flex;justify-content:space-between;align-items:center;gap:15px;padding:13px 0;border-bottom:1px solid var(--line)}.toggle{appearance:none;width:46px;height:25px;border-radius:99px;background:#cbd8e5;position:relative;cursor:pointer}.toggle:checked{background:var(--blue)}.toggle:before{content:"";position:absolute;width:19px;height:19px;background:white;border-radius:50%;left:3px;top:3px;transition:.15s}.toggle:checked:before{left:24px}
+.notice{padding:12px;border-radius:12px;background:#eef8ff;color:#185f9e;margin-bottom:14px;font-size:.83rem}.toast{position:fixed;right:20px;bottom:20px;background:var(--navy);color:#fff;padding:13px 17px;border-radius:14px;display:none;z-index:99}.toast.show{display:block}
+@media(max-width:850px){header{align-items:flex-start;flex-direction:column}.hero,.grid{grid-template-columns:1fr}.portalShell{grid-template-columns:1fr}.portalNav{position:static;display:flex;overflow:auto;gap:5px}.portalNav button{white-space:nowrap;width:auto}.draft{grid-template-columns:1fr 1fr}.form3,.kpis{grid-template-columns:1fr 1fr}}
+@media(max-width:520px){.cast,.draft,.form,.form3,.scoreRows,.kpis{grid-template-columns:1fr}}
+
+.seasonBar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:16px}
+.seasonSelect{min-width:220px}
+.draftSetup{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.draftLive{display:grid;grid-template-columns:1fr 1.35fr;gap:16px}
+.availablePick{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px;border-bottom:1px solid var(--line)}
+.availablePick:last-child{border-bottom:0}
+.availablePick small{display:block;color:var(--muted)}
+.pickBtn{padding:7px 10px;border:0;border-radius:9px;background:var(--blue);color:#fff;font-weight:850;cursor:pointer}
+.pickBtn:disabled{background:#cbd8e5;color:#65758a;cursor:not-allowed}
+.roundBadge{font-size:.68rem;text-transform:uppercase;letter-spacing:.08em;color:var(--blue);font-weight:900}
+.draftTeam{border:1px solid var(--line);border-radius:15px;overflow:hidden;margin-bottom:10px}
+.draftTeamHead{background:var(--navy);color:#fff;padding:10px 12px;display:flex;justify-content:space-between}
+.draftTeamPick{padding:9px 12px;border-bottom:1px solid var(--line);font-size:.82rem}
+.draftTeamPick:last-child{border-bottom:0}
+.orderPill{display:inline-block;padding:5px 8px;border-radius:99px;background:var(--ice);font-size:.68rem;font-weight:900}
+.locked{opacity:.6}
+@media(max-width:850px){.draftSetup{grid-template-columns:1fr 1fr}.draftLive{grid-template-columns:1fr}}
+@media(max-width:520px){.draftSetup{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header>
+<div class="logo">🪩 <span>Mirrorball</span> Fantasy</div>
+<nav>
+<button class="active" onclick="showSection('home',this)">Home</button>
+<button onclick="showSection('scores',this)">Scores</button>
+<button onclick="showSection('standings',this)">Standings</button>
+<button onclick="showSection('draft',this)">Draft</button>
+<button onclick="showSection('pickems',this)">Weekly Pick'ems</button>
+<button onclick="showSection('rules',this)">Rules</button>
+<button onclick="showSection('commissioner',this)">Commissioner</button>
+</nav>
+</header>
+<main>
+<section id="home" class="section active">
+<div class="hero">
+<div class="heroMain"><div class="kicker">DWTS Fantasy League • Blue Ballroom</div><h1>Draft.<br>Dance.<br>Dominate.</h1><p>Your fantasy headquarters — now with a full commissioner control room.</p><div class="heroBtns"><button class="primary" onclick="showSection('commissioner');portalShow('scoring')">🎯 Commissioner Score Entry</button><button onclick="showSection('standings')">🏆 View Standings</button></div></div>
+<div class="stats"><div class="stat"><b id="homeCouples">13</b><small>Couples loaded</small></div><div class="stat"><b id="homeTeams">4</b><small>Fantasy teams</small></div><div class="stat"><b id="homeScores">0</b><small>New scores entered</small></div><div class="stat"><b id="homeElims">0</b><small>Eliminations</small></div></div>
+</div>
+<div class="grid"><div><div class="card"><h2>🏆 Current League</h2><div id="homeLeaders"></div></div><div class="card"><h2>✨ Couples</h2><div id="homeCast" class="cast"></div></div></div><div><div class="card"><h2>🎛 Commissioner Portal</h2><div class="notice">Everything you need to run the league can now be managed from one place.</div><p><strong>Couples:</strong> Add and manage competitors.</p><p><strong>Scoring:</strong> Enter all four judges after every dance.</p><p><strong>Eliminations:</strong> Record who went home and when.</p><p><strong>Bonuses:</strong> Add custom fantasy points.</p><p><strong>Settings:</strong> Control how the league behaves.</p></div></div></div>
+</section>
+
+<section id="scores" class="section">
+<div class="card"><h2>🎯 Judges' Score Entry</h2><div class="notice">Enter a dance and all four judges. A 40 automatically receives the 10-point perfect-score bonus.</div>
+<div class="form"><select id="scoreCouple"></select><input id="dance" placeholder="Dance (e.g. Cha Cha)"><input id="week" type="number" min="1" max="20" placeholder="Week"><input id="notes" placeholder="Notes (optional)"></div>
+<div class="scoreRows" style="margin-top:10px"><input id="j1" type="number" min="0" max="10" placeholder="Carrie Ann"><input id="j2" type="number" min="0" max="10" placeholder="Derek"><input id="j3" type="number" min="0" max="10" placeholder="Bruno"><input id="j4" type="number" min="0" max="10" placeholder="Guest Judge"></div>
+<button class="primary" style="margin-top:12px" onclick="addScore()">Save Dance Score</button><div id="scoreHistory" style="margin-top:15px"></div></div>
+<div class="card"><h2>📊 Weekly Scoreboard</h2><div class="tabs" id="weekTabs"></div><div id="weekTable"></div></div>
+</section>
+
+<section id="standings" class="section"><div class="card"><h2>🏆 League Standings</h2><div id="standingsList"></div></div><div class="card"><h2>📈 Couple History</h2><div id="coupleHistory"></div></div></section>
+
+<section id="draft" class="section"><div class="card"><h2>📋 Draft Board</h2><div class="draft" id="draftBoard"></div></div></section>
+
+
+<section id="pickems" class="section">
+  <div class="card">
+    <h2>Weekly Pick'ems</h2>
+    <div class="notice">Make your picks before the episode. The commissioner creates the questions and scores them after the results are known.</div>
+
+    <div class="form3" style="margin-top:12px">
+      <label>Week<input id="peMainWeek" type="number" min="1" max="20" value="1"></label>
+      <button class="primary" type="button" onclick="peRenderMain()">Load Week</button>
+    </div>
+
+    <div id="peMainQuestions" style="margin-top:15px"></div>
+  </div>
+
+  <div class="card">
+    <h2>Team Picks</h2>
+    <div class="notice">Choose a team, answer each question, then save the picks.</div>
+    <div class="form3" style="margin-top:12px">
+      <select id="peMainTeam"></select>
+      <button class="primary" type="button" onclick="peSaveMainTeam()">Save Team Picks</button>
+    </div>
+    <div id="peMainTeamQuestions" style="margin-top:15px"></div>
+  </div>
+
+  <div class="card">
+    <h2>Pick'em Results</h2>
+    <div class="notice">After the episode, the commissioner can set the correct answers in the Commissioner Portal and score the week.</div>
+    <button class="primary" type="button" onclick="peScoreMain()">Score This Week</button>
+    <div id="peMainResults" style="margin-top:15px"></div>
+  </div>
+</section>
+
+<section id="rules" class="section">
+<div class="card">
+  <h2>Keeping Everyone in the Game</h2>
+  <p>If a fantasy team has no active couples left, that team is <strong>still in the game</strong>.</p>
+  <p>They continue to submit Weekly Pick'ems, earn points, and compete in the standings through the finale.</p>
+  <p><strong>No active couples does not eliminate the fantasy team.</strong></p>
+</div>
+<div class="card"><h2>📖 League Rules</h2><div class="notice">These rules are based on the spreadsheet you supplied and can be made fully editable from Commissioner Settings.</div><p><strong>Draft:</strong> 4 rounds; each manager drafts 4 couples.</p><p><strong>Draft Order:</strong> Randomly selected at the start of each round.</p><p><strong>Wildcard:</strong> There are exactly 2 Wildcard picks available during the draft. A Wildcard counts as a normal roster spot.</p><p><strong>Wildcard selection:</strong> After both Wildcard picks are drafted, 2 eligible couples are randomly selected and assigned to those Wildcard spots. A Wildcard couple cannot already be on that team (or drafted by anyone else).</p><p><strong>Wildcard elimination:</strong> Once a Wildcard couple is eliminated, that Wildcard spot is gone. There is no replacement couple.</p><p><strong>Judges:</strong> The four judges' scores are added together.</p><p><strong>Perfect Score:</strong> A 40 receives an additional 10 fantasy points.</p></div></section>
+
+<section id="commissioner" class="section">
+<div class="portalShell">
+<aside class="portalNav">
+<button class="active" onclick="portalShow('overview',this)">Overview</button>
+<button onclick="portalShow('couples',this)">Couples</button>
+<button onclick="portalShow('teams',this)">Fantasy Teams</button>
+<button onclick="portalShow('scoring',this)">Weekly Scoring</button>
+<button onclick="portalShow('pickems',this)">Weekly Pick'ems</button>
+<button onclick="portalShow('elims',this)">Eliminations</button>
+<button onclick="portalShow('bonuses',this)">Bonuses</button>
+<button onclick="portalShow('settings',this)">League Settings</button>
+</aside>
+<div>
+
+<div id="p-season" class="portalPage">
+<div class="portalHeader"><div><h2>Season Setup</h2><div class="sub">Start a fresh DWTS fantasy season while keeping previous seasons separate.</div></div></div>
+<div class="card">
+<div class="notice">Create the new season first. Then add celebrity/pro couples as they are announced. Your previous season data stays in its own season record.</div>
+<div class="form3">
+<input id="seasonName" placeholder="Season name (e.g. DWTS Season 35)">
+<input id="seasonYear" type="number" placeholder="Year" value="2026">
+<select id="seasonRounds"><option value="4">4 Draft Rounds</option><option value="5">5 Draft Rounds</option><option value="6">6 Draft Rounds</option><option value="8">8 Draft Rounds</option></select>
+</div>
+<div class="heroBtns" style="margin-top:12px">
+<button class="primary" onclick="createSeason()">Create New Season</button>
+<button class="smallbtn danger" onclick="resetCurrentSeason()">Reset Current Season Draft</button>
+</div>
+</div>
+<div class="card">
+<h2>Current Season</h2>
+<div id="seasonSummary"></div>
+</div>
+<div class="card">
+<h2>Add New-Season Couple</h2>
+<div class="form3">
+<input id="seasonCeleb" placeholder="Celebrity">
+<input id="seasonPro" placeholder="Professional">
+<select id="seasonCoupleStatus"><option>Available</option><option>Active</option><option>Not participating</option></select>
+</div>
+<button class="primary" style="margin-top:10px" onclick="addSeasonCouple()">Add Couple</button>
+</div>
+<div class="card">
+<h2>New-Season Cast</h2>
+<div id="seasonCast"></div>
+</div>
+</div>
+
+<div id="p-draftmanager" class="portalPage">
+<div class="portalHeader"><div><h2>Draft Manager</h2><div class="sub">Run the new-season draft directly from the website.</div></div><div id="draftStatus"></div></div>
+<div class="card">
+<div class="draftSetup">
+<select id="draftOrderMode"><option value="snake">Snake Draft</option><option value="standard">Standard Round-by-Round</option></select>
+<input id="draftRounds" type="number" min="1" max="12" value="4" placeholder="Rounds">
+<button class="smallbtn" onclick="randomizeDraftOrder()">Randomize Order</button>
+<button class="primary" onclick="startDraft()">Start / Restart Draft</button>
+</div>
+</div>
+<div class="draftLive">
+<div class="card">
+<h2>Available Couples</h2>
+<div class="sub" style="margin-bottom:10px">Click Draft to assign the current couple to the team whose turn it is.</div>
+<div id="availableCouples"></div>
+</div>
+<div class="card">
+<h2>Live Draft Board</h2>
+<div id="liveDraftBoard"></div>
+</div>
+</div>
+<div class="card">
+<h2>Draft Order</h2>
+<div id="draftOrderDisplay"></div>
+</div>
+</div>
+<div id="p-overview" class="portalPage active"><div class="portalHeader"><div><h2>Commissioner Dashboard</h2><div class="sub">Your season control room.</div></div><div class="seasonBar"><select class="seasonSelect" id="seasonSelector" onchange="switchSeason(this.value)"></select><button class="primary" onclick="portalShow('season')">+ New Season</button><button class="primary" onclick="portalShow('scoring')">+ Enter Score</button></div></div>
+<div class="notice success"><strong>New season:</strong> all live fantasy points and weekly score entries start at 0. Your new-season draft can be built independently.</div><div class="kpis"><div class="kpi"><b id="pCouples">0</b><span>Active couples</span></div><div class="kpi"><b id="pTeams">0</b><span>Fantasy teams</span></div><div class="kpi"><b id="pScores">0</b><span>Scores entered</span></div><div class="kpi"><b id="pElims">0</b><span>Eliminations</span></div></div>
+<div class="card" style="margin-top:15px"><h2>Commissioner Checklist</h2><div class="setting"><span>Load the full cast and pro partners</span><span class="tag" id="checkCouples">READY</span></div><div class="setting"><span>Confirm fantasy teams and draft picks</span><span class="tag">READY</span></div><div class="setting"><span>Enter judges' scores after each dance</span><span class="tag">READY</span></div><div class="setting"><span>Record eliminations and bonuses</span><span class="tag">READY</span></div><div class="setting"><span>Publish weekly leaderboard</span><span class="tag">NEXT</span></div></div>
+</div>
+
+<div id="p-couples" class="portalPage"><div class="portalHeader"><div><h2>Couple Manager</h2><div class="sub">Add and remove couples without editing the HTML.</div></div></div>
+<div class="card"><div class="form3"><input id="newCeleb" placeholder="Celebrity"><input id="newPro" placeholder="Professional"><select id="newStatus"><option>Active</option><option>Eliminated</option><option>Withdrawn</option></select></div><button class="primary" style="margin-top:10px" onclick="addPortalCouple()">Add Couple</button></div>
+<div class="card"><table class="adminTable"><thead><tr><th>Couple</th><th>Status</th><th>Points</th><th>Action</th></tr></thead><tbody id="coupleAdminTable"></tbody></table></div></div>
+
+<div id="p-teams" class="portalPage"><div class="portalHeader"><div><h2>Fantasy Team Manager</h2><div class="sub">Manage league members and draft picks.</div></div></div>
+<div class="card">
+<div class="form3">
+<input id="newTeam" placeholder="Team / manager name">
+<input id="newTeamNote" placeholder="Manager note">
+<button class="primary" onclick="addPortalTeam()">Create Team</button>
+</div>
+<div class="notice" style="margin-top:12px;margin-bottom:0">
+Add as many fantasy teams as you need for the new season. New teams automatically become part of the draft order.
+</div>
+</div>
+<div class="card"><div id="teamAdmin"></div></div></div>
+
+<div id="p-scoring" class="portalPage"><div class="portalHeader"><div><h2>Weekly Scoring</h2><div class="sub">One dance at a time; totals and bonuses are automatic.</div></div></div>
+<div class="card"><div class="form3"><select id="pScoreCouple"></select><input id="pDance" placeholder="Dance"><input id="pWeek" type="number" min="1" max="20" placeholder="Week"></div>
+<div class="scoreRows" style="margin-top:10px"><input id="pJ1" type="number" min="0" max="10" placeholder="Carrie Ann"><input id="pJ2" type="number" min="0" max="10" placeholder="Derek"><input id="pJ3" type="number" min="0" max="10" placeholder="Bruno"><input id="pJ4" type="number" min="0" max="10" placeholder="Guest Judge"></div>
+<div class="form3" style="margin-top:10px"><input id="pScoreNote" placeholder="Note"><button class="primary" onclick="portalAddScore()">Save Dance Score</button><button class="smallbtn" onclick="clearScoreForm()">Clear</button></div></div>
+<div class="card"><h2>Recent Entries</h2><div id="portalScoreHistory"></div></div></div>
+
+
+<div id="p-pickems" class="portalPage">
+  <div class="portalHeader">
+    <div><h2>Weekly Pick'ems</h2><div class="sub">Create weekly questions, set answers, and score the league.</div></div>
+  </div>
+
+  <div class="card">
+    <div class="form3">
+      <label>Week<input id="peCommWeek" type="number" min="1" max="20" value="1"></label>
+      <button class="primary" type="button" onclick="peRenderCommissioner()">Load Week</button>
+      <button class="smallbtn" type="button" onclick="peAddQuestion()">+ Add Question</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Questions</h2>
+    <div id="peCommQuestions"></div>
+    <button class="primary" type="button" onclick="peSaveCommissioner()">Save Questions</button>
+  </div>
+
+  <div class="card">
+    <h2>Score Week</h2>
+    <div class="notice">Set the correct answer after the episode, then score the week. Pick'em points are saved by team and week.</div>
+    <button class="primary" type="button" onclick="peScoreCommissioner()">Score Pick'ems</button>
+    <div id="peCommResults" style="margin-top:15px"></div>
+  </div>
+</div>
+
+<div id="p-elims" class="portalPage"><div class="portalHeader"><div><h2>Eliminations</h2><div class="sub">Record who went home and when.</div></div></div>
+<div class="card"><div class="form3"><select id="elimCouple"></select><input id="elimWeek" type="number" min="1" placeholder="Elimination week"><input id="elimNote" placeholder="Notes"></div><button class="primary" style="margin-top:10px" onclick="addElimination()">Record Elimination</button></div>
+<div class="card"><div id="elimHistory"></div></div></div>
+
+<div id="p-bonuses" class="portalPage"><div class="portalHeader"><div><h2>Bonus Points</h2><div class="sub">Add custom fantasy points for special events.</div></div></div>
+<div class="card"><div class="form3"><select id="bonusTeam"></select><input id="bonusPoints" type="number" placeholder="Points (+/-)"><input id="bonusReason" placeholder="Reason"></div><button class="primary" style="margin-top:10px" onclick="addBonus()">Apply Bonus</button></div>
+<div class="card"><div id="bonusHistory"></div></div></div>
+
+<div id="p-settings" class="portalPage"><div class="portalHeader"><div><h2>League Settings</h2><div class="sub">Controls for the scoring engine and future public site.</div></div></div>
+<div class="card"><div class="setting"><div><strong>League is live</strong><div class="sub">Show current standings publicly.</div></div><input id="setLive" class="toggle" type="checkbox" checked></div>
+<div class="setting"><div><strong>Show individual judges</strong><div class="sub">Display each judge's score.</div></div><input id="setJudges" class="toggle" type="checkbox" checked></div>
+<div class="setting"><div><strong>Perfect-score bonus</strong><div class="sub">Award 10 points for a 40.</div></div><input id="setPerfect" class="toggle" type="checkbox" checked></div>
+<div class="setting"><div><strong>Manual adjustments</strong><div class="sub">Allow custom point corrections and bonuses.</div></div><input id="setManual" class="toggle" type="checkbox" checked></div></div>
+<div class="card"><button class="primary" onclick="savePortalSettings()">Save League Settings</button></div></div>
+</div></div></section>
+</main>
+<div id="toast" class="toast"></div>
+
+<script>
+const NEW_COUPLES=["Ezra & Julia Stiles","Val & Jenna Dewan","Jan & Tatyana Ali","Britt & Taylor Hansen","Daniella & Ezra Frech","Pasha & Amber Glenn","Rylee & Connor Wood","Hailey & Sarah Nader","Sharna & Tyler Cameron","Alan & Giada DeLaurentiis","Jenna & Harry Shum Jr.","Adele & Connor Leavitt","Witney & Guillermo Rodriguez","Mark & Maura Higgins","Brandon & Ciara Miller","Emma & Jackson Olsen"];
+const couples=Object.fromEntries(NEW_COUPLES.map(name=>[name,Array(11).fill(0)]));
+const draft={"JUSTIN": [], "GABBY": [], "MORGAN": [], "TAYLOR": []};
+const baseTotals = {};
+let entries=[]; localStorage.removeItem('dwtsScores');
+let portalCouples=JSON.parse(localStorage.getItem('portalCouples')||'null')||NEW_COUPLES.map(name=>({name,status:'Active'}));
+let portalTeams=JSON.parse(localStorage.getItem('portalTeams')||'null')||Object.keys(draft).map(name=>({name,note:'Imported from spreadsheet',picks:[]}));
+let portalElims=JSON.parse(localStorage.getItem('portalElims')||'[]');
+let portalBonuses=JSON.parse(localStorage.getItem('portalBonuses')||'[]');
+
+// New 2026 cast update: replace the previous season's couples and old draft picks once.
+if(localStorage.getItem('dwts2026CouplesUpdated')!=='yes'){
+  portalCouples=NEW_COUPLES.map(name=>({name,status:'Active'}));
+  portalTeams=portalTeams.map(t=>({...t,picks:[]}));
+  portalElims=[];
+  portalBonuses=[];
+  localStorage.setItem('portalCouples',JSON.stringify(portalCouples));
+  localStorage.setItem('portalTeams',JSON.stringify(portalTeams));
+  localStorage.setItem('portalElims','[]');
+  localStorage.setItem('portalBonuses','[]');
+  localStorage.setItem('dwts2026CouplesUpdated','yes');
+}
+
+function esc(s){return String(s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));}
+function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2300)}
+function showSection(id,btn){document.querySelectorAll('main>.section').forEach(x=>x.classList.remove('active'));document.getElementById(id).classList.add('active');document.querySelectorAll('header nav button').forEach(x=>x.classList.remove('active'));if(btn)btn.classList.add('active');if(id==='commissioner')renderPortal();renderAll()}
+function portalSave(){localStorage.setItem('portalCouples',JSON.stringify(portalCouples));localStorage.setItem('portalTeams',JSON.stringify(portalTeams));localStorage.setItem('portalElims',JSON.stringify(portalElims));localStorage.setItem('portalBonuses',JSON.stringify(portalBonuses))}
+function portalShow(id,btn){document.querySelectorAll('.portalPage').forEach(x=>x.classList.remove('active'));document.getElementById('p-'+id).classList.add('active');document.querySelectorAll('.portalNav button').forEach(x=>x.classList.remove('active'));if(btn)btn.classList.add('active');renderPortal()}
+function addPortalCouple(){let n=newCeleb.value.trim(),p=newPro.value.trim();if(!n||!p)return alert('Enter the celebrity and professional.');let name=n+' & '+p;if(portalCouples.some(x=>x.name===name))return alert('That couple already exists.');portalCouples.push({name,status:newStatus.value});couples[name]=Array(11).fill(0);portalSave();newCeleb.value='';newPro.value='';renderPortal();renderAll();toast('Couple added to the ballroom.')}
+function removePortalCouple(i){if(!confirm('Remove this couple from the commissioner list?'))return;delete couples[portalCouples[i].name];portalCouples.splice(i,1);portalSave();renderPortal();renderAll()}
+function addPortalTeam(){
+  let n=newTeam.value.trim();
+  if(!n)return alert('Enter a team name.');
+  if(portalTeams.some(x=>x.name===n))return alert('That team already exists.');
+  let team={name:n,note:newTeamNote.value.trim(),picks:[]};
+  portalTeams.push(team);
+  let s=currentSeason();
+  if(s && !s.teams.some(x=>x.name===n)){
+    s.teams.push({name:n,picks:[]});
+    s.order.push(n);
+  }
+  portalSave();
+  newTeam.value='';newTeamNote.value='';
+  renderPortal();renderSeasonUI();renderDraftManager();
+  toast('Fantasy team created and added to the draft.');
+}
+function removePortalTeam(i){if(!confirm('Remove this fantasy team?'))return;portalTeams.splice(i,1);portalSave();renderPortal();toast('Team removed.')}
+function addScore(){let c=scoreCouple.value,d=dance.value.trim(),w=+week.value,s=[j1.value,j2.value,j3.value,j4.value];if(!c||!d||!w||s.some(x=>x===''))return alert('Complete the couple, dance, week, and all four judges.');let total=s.reduce((a,b)=>a+(+b||0),0),bonus=total===40?10:0;entries.push({couple:c,dance:d,week:w,scores:s.map(Number),total,bonus,notes:notes.value.trim()});localStorage.setItem('dwtsScores',JSON.stringify(entries));dance.value=notes.value='';j1.value=j2.value=j3.value=j4.value='';renderAll();renderPortal();renderSeasonUI();renderDraftManager();toast(total===40?'Perfect score! +10 bonus awarded.':'Dance score saved.')}
+function portalAddScore(){let c=pScoreCouple.value,d=pDance.value.trim(),w=+pWeek.value,s=[pJ1.value,pJ2.value,pJ3.value,pJ4.value];if(!c||!d||!w||s.some(x=>x===''))return alert('Complete the couple, dance, week, and all four judges.');let total=s.reduce((a,b)=>a+(+b||0),0),bonus=total===40&&getSetting('perfect',true)?10:0;entries.push({couple:c,dance:d,week:w,scores:s.map(Number),total,bonus,notes:pScoreNote.value.trim()});localStorage.setItem('dwtsScores',JSON.stringify(entries));clearScoreForm();renderPortal();renderAll();toast(total===40?'Perfect score! +10 bonus awarded.':'Dance score saved.')}
+function clearScoreForm(){pDance.value='';pWeek.value='';pScoreNote.value='';pJ1.value=pJ2.value=pJ3.value=pJ4.value=''}
+function addElimination(){let c=elimCouple.value,w=+elimWeek.value;if(!c||!w)return alert('Choose a couple and week.');portalElims.push({couple:c,week:w,note:elimNote.value.trim()});let s=currentSeason();let wp=s.picks.find(x=>x.wildcard && x.couple===c);if(wp)markWildcardEliminated(c,w);let x=portalCouples.find(z=>z.name===c);if(x)x.status='Eliminated';portalSave();elimWeek.value='';elimNote.value='';renderPortal();renderAll();toast(c+' marked eliminated.')}
+function addBonus(){let team=bonusTeam.value,p=+bonusPoints.value,reason=bonusReason.value.trim();if(!team||!p||!reason)return alert('Enter a team, points, and reason.');portalBonuses.push({team,points:p,reason});portalSave();bonusPoints.value='';bonusReason.value='';renderPortal();toast('Bonus applied.')}
+function getSetting(k,d){let a=JSON.parse(localStorage.getItem('dwtsSettings')||'{}');return a[k]===undefined?d:a[k]}
+function savePortalSettings(){localStorage.setItem('dwtsSettings',JSON.stringify({live:setLive.checked,judges:setJudges.checked,perfect:setPerfect.checked,manual:setManual.checked}));toast('League settings saved.')}
+
+let seasons=JSON.parse(localStorage.getItem('dwtsSeasons')||'null');
+if(!seasons){
+  seasons=[{
+    id:'season-'+Date.now(),
+    name:'New DWTS Season',
+    year:new Date().getFullYear(),
+    rounds:4,
+    couples:[],
+    teams:Object.keys(draft).map(n=>({name:n,picks:[]})),
+    order:Object.keys(draft),
+    draftStarted:false,
+    draftLocked:false,
+    currentPick:0,
+    picks:[]
+  }];
+  localStorage.setItem('dwtsSeasons',JSON.stringify(seasons));
+}
+let currentSeasonId=localStorage.getItem('currentSeasonId')||seasons[seasons.length-1].id;
+if(localStorage.getItem('dwts2026SeasonCouplesUpdated')!=='yes'){
+  seasons.forEach(s=>{
+    s.couples=NEW_COUPLES.map(name=>({name,status:'Active'}));
+    s.teams=(s.teams||[]).map(t=>({...t,picks:[]}));
+    s.picks=[]; s.currentPick=0; s.draftStarted=false; s.draftLocked=false;
+  });
+  localStorage.setItem('dwts2026SeasonCouplesUpdated','yes');
+  localStorage.setItem('dwtsSeasons',JSON.stringify(seasons));
+}
+// New-season reset: live scoring starts at zero. Draft/couple setup is preserved.
+if(localStorage.getItem('dwtsNewSeasonPointsCleared')!=='yes'){
+  entries=[];
+  localStorage.removeItem('dwtsScores');
+  localStorage.setItem('dwtsNewSeasonPointsCleared','yes');
+}
+
+
+function currentSeason(){
+  let s=seasons.find(x=>x.id===currentSeasonId)||seasons[0];
+  if(s){
+    portalTeams.forEach(t=>{
+      if(!s.teams.some(x=>x.name===t.name))s.teams.push({name:t.name,picks:[]});
+      if(!s.order.includes(t.name))s.order.push(t.name);
+    });
+  }
+  return s;
+}
+function saveSeasons(){localStorage.setItem('dwtsSeasons',JSON.stringify(seasons));localStorage.setItem('currentSeasonId',currentSeasonId)}
+function createSeason(){
+  let name=seasonName.value.trim()||('DWTS Season '+seasonYear.value);
+  let year=+seasonYear.value||new Date().getFullYear();
+  let rounds=+seasonRounds.value||4;
+  let teams=portalTeams.map(x=>({name:x.name,picks:[]}));
+  let order=teams.map(x=>x.name);
+  let ns={id:'season-'+Date.now(),name,year,rounds,couples:[],teams,order,draftStarted:false,draftLocked:false,currentPick:0,picks:[],mode:'snake'};
+  seasons.push(ns);currentSeasonId=ns.id;saveSeasons();renderSeasonUI();renderPortal();toast('New season created.');portalShow('draftmanager');
+}
+function switchSeason(id){currentSeasonId=id;saveSeasons();renderSeasonUI();renderDraftManager()}
+function addSeasonCouple(){
+  let s=currentSeason(),c=seasonCeleb.value.trim(),p=seasonPro.value.trim();
+  if(!c||!p)return alert('Enter both the celebrity and professional.');
+  let name=c+' & '+p;
+  if(s.couples.some(x=>x.name===name))return alert('That couple is already in this season.');
+  s.couples.push({name,status:seasonCoupleStatus.value});
+  saveSeasons();seasonCeleb.value='';seasonPro.value='';renderSeasonUI();renderDraftManager();toast('New-season couple added.');
+}
+function removeSeasonCouple(i){
+  let s=currentSeason();if(!confirm('Remove this couple from the current season?'))return;
+  s.couples.splice(i,1);saveSeasons();renderSeasonUI();renderDraftManager();
+}
+function resetCurrentSeason(){
+  let s=currentSeason();if(!confirm('Reset the current season draft? This removes its draft picks and draft progress.'))return;
+  s.teams=s.teams.map(x=>({name:x.name,picks:[]}));s.picks=[];s.currentPick=0;s.draftStarted=false;s.draftLocked=false;saveSeasons();renderDraftManager();toast('Current season draft reset.');
+}
+function randomizeDraftOrder(){
+  let s=currentSeason();s.order=s.teams.map(x=>x.name).sort(()=>Math.random()-.5);saveSeasons();renderDraftManager();toast('Draft order randomized.');
+}
+function startDraft(){
+  let s=currentSeason();let rounds=+draftRounds.value||4;
+  if(!s.teams.length)return alert('Add fantasy teams before starting the draft.');
+  s.rounds=rounds;s.mode=draftOrderMode.value;s.draftStarted=true;s.draftLocked=false;s.currentPick=0;s.picks=[];s.wildcardsAssigned=false;
+  s.teams=s.teams.map(x=>({name:x.name,picks:[]}));
+  if(!s.order.length)s.order=s.teams.map(x=>x.name);
+  saveSeasons();renderDraftManager();toast('Draft started.');
+}
+function draftTeamAtPick(s){
+  if(!s.order.length)return null;
+  let n=s.order.length,round=Math.floor(s.currentPick/n),pos=s.currentPick%n;
+  if(s.mode==='snake') {
+    return s.order[round%2===1 ? n-1-pos : pos];
+  }
+  return s.order[pos];
+}
+function wildcardCount(s){ return s.picks.filter(x=>String(x.couple).startsWith('WILDCARD')).length; }
+function assignWildcards(s){
+  if(wildcardCount(s)!==2 || s.wildcardsAssigned)return;
+  const already=new Set(s.picks.filter(x=>!String(x.couple).startsWith('WILDCARD')).map(x=>x.couple));
+  const eligible=s.couples.map(x=>x.name).filter(n=>!already.has(n));
+  if(eligible.length<2){alert('Not enough eligible couples to assign both Wildcards.');return;}
+  const shuffled=eligible.sort(()=>Math.random()-0.5).slice(0,2);
+  const wc=s.picks.filter(x=>String(x.couple).startsWith('WILDCARD'));
+  wc.forEach((pick,i)=>{
+    const team=s.teams.find(t=>t.name===pick.team);
+    if(team){const idx=team.picks.indexOf(pick.couple);if(idx>=0)team.picks[idx]=shuffled[i];}
+    pick.couple=shuffled[i];pick.wildcard=true;pick.wildcardNumber=i+1;pick.wildcardActive=true;
+  });
+  s.wildcardsAssigned=true;
+  toast('Wildcards assigned randomly!');
+}
+function markWildcardEliminated(couple,week){
+  let s=currentSeason();
+  let pick=s.picks.find(x=>x.wildcard && x.couple===couple);
+  if(pick){pick.wildcardActive=false;pick.wildcardEliminatedWeek=week;}
+  s.teams.forEach(t=>{let p=t.picks.indexOf(couple);if(p>=0 && pick){t.wildcardGone=true;}});
+  saveSeasons();renderDraftManager();
+}
+function makeWildcardPick(){
+  let s=currentSeason();
+  if(!s.draftStarted||s.draftLocked)return alert('Start the draft first.');
+  if(wildcardCount(s)>=2)return alert('Both Wildcard picks have already been drafted.');
+  let teamName=draftTeamAtPick(s),team=s.teams.find(x=>x.name===teamName);
+  if(!team)return alert('Draft team not found.');
+  const label='WILDCARD #'+(wildcardCount(s)+1);
+  team.picks.push(label);s.picks.push({pick:s.currentPick+1,round:Math.floor(s.currentPick/s.order.length)+1,team:teamName,couple:label,wildcard:true});
+  s.currentPick++;
+  if(wildcardCount(s)===2) assignWildcards(s);
+  if(s.currentPick>=s.rounds*s.order.length){s.draftLocked=true;toast(s.wildcardsAssigned?'Draft complete — Wildcards randomly assigned!':'Draft complete — board locked!')}else toast(wildcardCount(s)===2?'Both Wildcards selected — couples randomly assigned!':teamName+' drafted '+label+'.');
+  saveSeasons();renderDraftManager();renderSeasonUI();
+}
+function makeDraftPick(name){
+  let s=currentSeason();if(!s.draftStarted||s.draftLocked)return alert('Start the draft first.');
+  if(s.currentPick>=s.rounds*s.order.length)return alert('The draft is complete.');
+  if(s.picks.some(x=>x.couple===name))return alert('That couple has already been drafted.');
+  let teamName=draftTeamAtPick(s),team=s.teams.find(x=>x.name===teamName);
+  if(!team)return alert('Draft team not found.');
+  team.picks.push(name);s.picks.push({pick:s.currentPick+1,round:Math.floor(s.currentPick/s.order.length)+1,team:teamName,couple:name});
+  s.currentPick++;
+  if(s.currentPick>=s.rounds*s.order.length){
+    if(wildcardCount(s)===2)assignWildcards(s);
+    s.draftLocked=true;toast(wildcardCount(s)===2?'Draft complete — Wildcards randomly assigned!':'Draft complete — board locked!');
+  }else toast(teamName+' drafted '+name+'.');
+  saveSeasons();renderDraftManager();renderSeasonUI();
+}
+function undoLastPick(){
+  let s=currentSeason();if(!s.picks.length)return alert('There are no picks to undo.');
+  let last=s.picks.pop(),team=s.teams.find(x=>x.name===last.team);
+  if(team)team.picks.pop();
+  s.currentPick=Math.max(0,s.currentPick-1);s.draftLocked=false;s.draftStarted=true;s.wildcardsAssigned=false;saveSeasons();renderDraftManager();toast('Last pick undone.');
+}
+function renderSeasonUI(){
+  let s=currentSeason();
+  if(typeof seasonSelector!=='undefined' && seasonSelector){seasonSelector.innerHTML=seasons.map(x=>`<option value="${x.id}" ${x.id===currentSeasonId?'selected':''}>${esc(x.name)}</option>`).join('')}
+  seasonSummary.innerHTML=`<div class="notice"><strong>${esc(s.name)}</strong> · ${s.year} · ${s.rounds} rounds · ${s.couples.length} couples entered · ${s.teams.length} fantasy teams · ${s.draftLocked?'Draft locked':'Draft '+(s.draftStarted?'in progress':'not started')}</div>`;
+  seasonCast.innerHTML=s.couples.length?s.couples.map((c,i)=>`<div class="scoreRow"><div><strong>${esc(c.name)}</strong><br><span class="sub">${esc(c.status)}</span></div><button class="smallbtn danger" onclick="removeSeasonCouple(${i})">Remove</button></div>`).join(''):'<p class="empty">No couples entered yet. Add them as the cast is announced.</p>';
+}
+function renderDraftManager(){
+  let s=currentSeason();
+  draftRounds.value=s.rounds;
+  draftStatus.innerHTML=s.draftLocked?'<span class="tag">DRAFT LOCKED</span>':s.draftStarted?'<span class="tag">DRAFT LIVE</span>':'<span class="tag">NOT STARTED</span>';
+  draftOrderDisplay.innerHTML=s.order.length?s.order.map((x,i)=>`<span class="orderPill">${i+1}. ${esc(x)}</span> `).join(''):'<span class="empty">No teams configured.</span>';
+  let drafted=new Set(s.picks.filter(x=>!String(x.couple).startsWith('WILDCARD')).map(x=>x.couple));
+  let wildcardSlots=Math.max(0,2-wildcardCount(s));
+  let wildcardCard=wildcardSlots>0?`<div class="availablePick ${s.draftLocked||!s.draftStarted?'locked':''}"><div><strong>Wildcard</strong><small>${wildcardSlots} Wildcard pick${wildcardSlots===1?'':'s'} remaining · randomly assigned after both are drafted</small></div><button class="pickBtn" ${s.draftLocked||!s.draftStarted?'disabled':''} onclick="makeWildcardPick()">Draft Wildcard</button></div>`:'';
+  availableCouples.innerHTML=wildcardCard+(s.couples.length?s.couples.map(c=>`<div class="availablePick ${drafted.has(c.name)?'locked':''}"><div><strong>${esc(c.name)}</strong><small>${esc(c.status)}</small></div><button class="pickBtn" ${drafted.has(c.name)||s.draftLocked||!s.draftStarted?'disabled':''} onclick="makeDraftPick(${JSON.stringify(c.name)})">${drafted.has(c.name)?'Drafted':'Draft'}</button></div>`).join(''):'<p class="empty">Add couples in Season Setup first.</p>');
+  let current=s.draftStarted&&!s.draftLocked?draftTeamAtPick(s):null;
+  let html=current?`<div class="notice"><strong>Current pick:</strong> ${esc(current)} · Pick ${s.currentPick+1} of ${s.rounds*s.order.length}</div>`:'';
+  html+=s.teams.map(t=>`<div class="draftTeam"><div class="draftTeamHead"><strong>${esc(t.name)}</strong><span>${t.picks.length}/${s.rounds}</span></div>${t.picks.length?t.picks.map((p,i)=>`<div class="draftTeamPick"><span class="roundBadge">Round ${i+1}</span> ${esc(p)}${(()=>{let wp=s.picks.find(x=>x.wildcard&&x.couple===p);return wp?(wp.wildcardActive===false?' <span class="tag">WILDCARD GONE</span>':' <span class="tag">WILDCARD</span>'):''})()}</div>`).join(''):'<div class="draftTeamPick empty">No picks yet</div>'}</div>`).join('');
+  if(s.wildcardsAssigned){html+=`<div class="notice" style="margin-top:12px"><strong>Wildcards assigned:</strong> ${s.picks.filter(x=>x.wildcard).map(x=>esc(x.team)+' → '+esc(x.couple)+(x.wildcardActive===false?' (gone after elimination)':'')).join(' · ')}</div>`;}
+  html+=s.picks.length?`<button class="smallbtn danger" onclick="undoLastPick()">Undo Last Pick</button>`:'';
+  liveDraftBoard.innerHTML=html;
+}
+function renderPortal(){
+renderSeasonUI();renderDraftManager();
+pCouples.textContent=portalCouples.filter(x=>x.status!=='Eliminated').length;pTeams.textContent=portalTeams.length;pScores.textContent=entries.length;pElims.textContent=portalElims.length;checkCouples.textContent=portalCouples.length?'READY':'IN PROGRESS';
+coupleAdminTable.innerHTML=portalCouples.map((x,i)=>`<tr><td><strong>${esc(x.name)}</strong></td><td><span class="tag">${esc(x.status)}</span></td><td>${(couples[x.name]||[]).reduce((a,b)=>a+b,0)}</td><td><button class="smallbtn danger" onclick="removePortalCouple(${i})">Remove</button></td></tr>`).join('');
+pScoreCouple.innerHTML=portalCouples.map(x=>`<option>${esc(x.name)}</option>`).join('');elimCouple.innerHTML=portalCouples.map(x=>`<option>${esc(x.name)}</option>`).join('');bonusTeam.innerHTML=portalTeams.map(x=>`<option>${esc(x.name)}</option>`).join('');
+teamAdmin.innerHTML=portalTeams.length?portalTeams.map((x,i)=>`<div class="scoreRow"><div><strong>${esc(x.name)}</strong><br><span class="sub">${esc(x.note||'No note')} · ${x.picks.length} picks</span></div><button class="smallbtn danger" onclick="removePortalTeam(${i})">Remove</button></div>`).join(''):'<p class="empty">No teams yet.</p>';
+portalScoreHistory.innerHTML=entries.length?entries.slice().reverse().slice(0,20).map(e=>`<div class="scoreRow"><div><strong>${esc(e.couple)}</strong> · ${esc(e.dance)}<br><span class="sub">Week ${e.week} · ${e.scores.join(' / ')}</span></div><strong>${e.total}${e.bonus?' + '+e.bonus:''}</strong></div>`).join(''):'<p class="empty">No scores entered yet.</p>';
+elimHistory.innerHTML=portalElims.length?portalElims.slice().reverse().map(e=>`<div class="scoreRow"><div><strong>${esc(e.couple)}</strong><br><span class="sub">Eliminated Week ${e.week}${e.note?' · '+esc(e.note):''}</span></div><span class="tag">ELIMINATED</span></div>`).join(''):'<p class="empty">No eliminations recorded.</p>';
+bonusHistory.innerHTML=portalBonuses.length?portalBonuses.slice().reverse().map(e=>`<div class="scoreRow"><div><strong>${esc(e.team)}</strong><br><span class="sub">${esc(e.reason)}</span></div><strong>${e.points>0?'+':''}${e.points}</strong></div>`).join(''):'<p class="empty">No custom bonuses yet.</p>';
+}
+function renderAll(){
+const liveTotals={}; portalTeams.forEach(t=>liveTotals[t.name]=0); portalBonuses.forEach(b=>liveTotals[b.team]=(liveTotals[b.team]||0)+b.points); const rank=Object.entries(liveTotals).sort((a,b)=>b[1]-a[1]);
+homeLeaders.innerHTML=rank.map((x,i)=>`<div class="leader"><div class="rank">#${i+1}</div><div class="grow"><strong>${esc(x[0])}</strong><div class="bar"><i style="width:${x[1]/rank[0][1]*100}%"></i></div></div><div class="pts">${x[1]} pts</div></div>`).join('');
+homeCast.innerHTML=portalCouples.map(x=>`<div class="couple"><span class="score">${entries.filter(e=>e.couple===x.name).reduce((a,e)=>a+e.total+(e.bonus||0),0)} pts</span><div>🕺</div><h3>${esc(x.name)}</h3><span class="tag">${entries.filter(e=>e.couple===x.name).length} dances scored</span></div>`).join('');
+homeCouples.textContent=Object.keys(couples).length;homeTeams.textContent=portalTeams.length;homeScores.textContent=entries.length;homeElims.textContent=portalElims.length;
+scoreCouple.innerHTML=Object.keys(couples).map(c=>`<option>${esc(c)}</option>`).join('');
+scoreHistory.innerHTML=entries.length?entries.slice().reverse().map(e=>`<div class="scoreRow"><div><strong>${esc(e.couple)}</strong> · ${esc(e.dance)}<br><span class="sub">Week ${e.week} · Judges: ${e.scores.join(' / ')}</span></div><strong>${e.total}${e.bonus?' + '+e.bonus:''}</strong></div>`).join(''):'<p class="empty">No scores entered yet.</p>';
+standingsList.innerHTML=rank.map((x,i)=>`<div class="leader"><div class="rank">#${i+1}</div><div class="grow"><strong>${esc(x[0])}</strong><div class="sub">Spreadsheet season total</div></div><div class="pts">${x[1]} pts</div></div>`).join('');
+draftBoard.innerHTML=Object.entries(draft).map(([team,picks])=>`<div class="team"><h3>${esc(team)}</h3>${picks.map((p,i)=>`<div class="pick"><span>ROUND ${i+1}</span>${esc(p)}</div>`).join('')}</div>`).join('');
+coupleHistory.innerHTML=portalCouples.map(x=>`<div class="scoreRow"><div><strong>${esc(x.name)}</strong><br><span class="sub">New-season live points</span></div><strong>${entries.filter(e=>e.couple===x.name).reduce((a,e)=>a+e.total+(e.bonus||0),0)}</strong></div>`).join('');
+let weeks=[...new Set(entries.map(e=>e.week).concat([...Array(11)].map((_,i)=>i+1)))].sort((a,b)=>a-b);weekTabs.innerHTML=weeks.map((w,i)=>`<button class="smallbtn ${i===0?'success':''}" onclick="weekly(${w},this)">Week ${w}</button>`).join('');if(weeks.length)weekly(weeks[0]);
+}
+function weekly(w,btn){document.querySelectorAll('#weekTabs button').forEach(x=>x.classList.remove('success'));if(btn)btn.classList.add('success');let rows=Object.entries(couples).map(([c,a])=>[c,a[w-1]||0]);let added={};entries.filter(e=>e.week===w).forEach(e=>added[e.couple]=(added[e.couple]||0)+e.total+e.bonus);rows=rows.map(r=>[r[0],r[1]+(added[r[0]]||0)]).sort((a,b)=>b[1]-a[1]);weekTable.innerHTML=`<table class="table"><thead><tr><th>Couple</th><th>Week ${w}</th></tr></thead><tbody>${rows.map(r=>`<tr><td>${esc(r[0])}</td><td class="total">${r[1]||'—'}</td></tr>`).join('')}</tbody></table>`}
+renderAll();renderPortal();
+</script>
+
+<style>
+  .mb-pickems-wrap{max-width:1100px;margin:30px auto;padding:0 18px}
+  .mb-pick-card{background:#fff;border:1px solid #dbe4f0;border-radius:16px;padding:20px;margin:16px 0;box-shadow:0 5px 18px rgba(20,45,80,.06)}
+  .mb-pick-card h3{margin-top:0}
+  .mb-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+  .mb-pick-card input,.mb-pick-card select{width:100%;box-sizing:border-box;padding:10px;border:1px solid #cbd5e1;border-radius:9px;background:#fff}
+  .mb-btn{border:0;border-radius:9px;padding:10px 14px;cursor:pointer;font-weight:700}
+  .mb-btn-primary{background:#0b3d91;color:#fff}
+  .mb-btn-secondary{background:#e8eef7;color:#123}
+  .mb-table{width:100%;border-collapse:collapse}
+  .mb-table th,.mb-table td{padding:10px;border-bottom:1px solid #e5eaf1;text-align:left}
+  .mb-points{font-weight:800}
+</style>
+
+<section id="updated-scoring" class="section">
+  <div class="mb-pickems-wrap">
+    <div class="mb-pick-card">
+      <h2>Updated Scoring</h2>
+      <p>Simple scoring for the new season — no Captain, multipliers, trades, or other strategy bonuses for now.</p>
+      <table class="mb-table">
+        <tr><th>Event</th><th>Points</th></tr>
+        <tr><td>Judges' score</td><td>1 point per judges' point</td></tr>
+        <tr><td>Score of 30+</td><td>+3</td></tr>
+        <tr><td>Score of 35+</td><td>+5</td></tr>
+        <tr><td>Perfect 40</td><td>+10</td></tr>
+        <tr><td>Bottom 2 but survives</td><td>+3</td></tr>
+        <tr><td>Eliminated</td><td>-5</td></tr>
+        <tr><td>Correct elimination Pick'em</td><td>+5</td></tr>
+        <tr><td>Double elimination — both correct</td><td>+8</td></tr>
+        <tr><td>Double elimination — one correct</td><td>+4</td></tr>
+      </table>
+    </div>
+  </div>
+</section>
+
+<section id="weekly-pickems" class="section">
+  <div class="mb-pickems-wrap">
+    <div class="mb-pick-card">
+      <h2>Weekly Pick'ems</h2>
+      <p>Make your picks before each episode. The commissioner creates the questions and scores them after the results are known.</p>
+      <label>Week <input id="mb-week" type="number" min="1" value="1" style="max-width:100px"></label>
+    </div>
+    <div class="mb-pick-card">
+      <h3>Commissioner: This Week's Pick'ems</h3>
+      <p>Add questions, choose their point value, and set the correct answer after the episode.</p>
+      <div id="mb-question-editor"></div>
+      <button class="mb-btn mb-btn-secondary" id="mb-add-question" type="button">Add Question</button>
+      <button class="mb-btn mb-btn-primary" id="mb-save-questions" type="button">Save Questions</button>
+    </div>
+    <div class="mb-pick-card"><h3>Team Picks</h3><div id="mb-team-editor"></div></div>
+    <div class="mb-pick-card"><h3>Pick'em Results</h3><p>After entering the correct answers, score the week with one click.</p><button class="mb-btn mb-btn-primary" id="mb-score-picks" type="button">Score This Week</button><div id="mb-results" style="margin-top:15px"></div></div>
+  </div>
+</section>
+<script>
+(function(){
+  const KEY='mirrorballPickems2026';
+  const TEAMS=['JUSTIN','GABBY','MORGAN','TAYLOR','TEAM 5','TEAM 6','TEAM 7'];
+  const COUPLES=['Ezra & Julia Stiles','Val & Jenna Dewan','Jan & Tatyana Ali','Britt & Taylor Hansen','Daniella & Ezra Frech','Pasha & Amber Glenn','Rylee & Connor Wood','Hailey & Sarah Nader','Sharna & Tyler Cameron','Alan & Giada DeLaurentiis','Jenna & Harry Shum Jr.','Adele & Connor Leavitt','Witney & Guillermo Rodriguez','Mark & Maura Higgins','Brandon & Ciara Miller','Emma & Jackson Olsen'];
+  const DEFAULT=[{text:'Who will score the highest?',difficulty:'easy',answer:''},{text:'Who will score the lowest?',difficulty:'easy',answer:''},{text:'Who will be eliminated?',difficulty:'hard',answer:''}];
+  const load=()=>{try{return JSON.parse(localStorage.getItem(KEY))||{};}catch(e){return {};}};
+  const save=d=>localStorage.setItem(KEY,JSON.stringify(d));
+  const esc=s=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+  const pts=d=>d==='hard'?5:d==='medium'?3:2;
+  function state(){const d=load(),w=Math.max(1,+document.getElementById('mb-week').value||1);d[w]??={questions:[],picks:{},scores:{}};if(!d[w].questions.length)d[w].questions=DEFAULT.map(x=>({...x}));return[d,w];}
+  function opts(selected){return '<option value="">Not set</option>'+COUPLES.map(c=>`<option value="${esc(c)}" ${selected===c?'selected':''}>${esc(c)}</option>`).join('');}
+  function renderQuestions(){const[d,w]=state(),box=document.getElementById('mb-question-editor');box.innerHTML='';d[w].questions.forEach((q,i)=>box.insertAdjacentHTML('beforeend',`<div style="display:grid;grid-template-columns:1fr 140px 1fr auto;gap:10px;align-items:end;border-top:1px solid #e5eaf1;padding:14px 0"><label>Question ${i+1}<input class="mb-q-text" data-i="${i}" value="${esc(q.text)}" placeholder="Your question"></label><label>Points<select class="mb-q-diff" data-i="${i}"><option value="easy" ${q.difficulty==='easy'?'selected':''}>4 points</option><option value="medium" ${q.difficulty==='medium'?'selected':''}>4 points</option><option value="hard" ${q.difficulty==='hard'?'selected':''}>6 points</option></select></label><label>Correct Answer<select class="mb-q-answer" data-i="${i}">${opts(q.answer)}</select></label><button class="mb-btn mb-btn-secondary mb-del" data-i="${i}" type="button">Remove</button></div>`));box.querySelectorAll('.mb-del').forEach(b=>b.onclick=()=>{const[d,w]=state();d[w].questions.splice(+b.dataset.i,1);save(d);renderQuestions();renderTeams();renderResults();});}
+  function renderTeams(){const[d,w]=state(),box=document.getElementById('mb-team-editor'),qs=d[w].questions;box.innerHTML=TEAMS.map(team=>`<div class="mb-pick-card" style="margin:12px 0;border:1px solid #e5eaf1"><h3>${esc(team)}</h3>${qs.map((q,i)=>`<label style="display:block;margin:12px 0"><strong>${i+1}. ${esc(q.text)}</strong> <span style="opacity:.7">(${pts(q.difficulty)} pts)</span><select class="mb-team-pick" data-team="${esc(team)}" data-i="${i}"><option value="">Make a pick</option>${COUPLES.map(c=>`<option value="${esc(c)}" ${d[w].picks?.[team]?.[i]===c?'selected':''}>${esc(c)}</option>`).join('')}</select></label>`).join('')}<button class="mb-btn mb-btn-primary mb-save-team" data-team="${esc(team)}" type="button">Save Picks</button></div>`).join('');box.querySelectorAll('.mb-save-team').forEach(b=>b.onclick=()=>{const[d,w]=state(),team=b.dataset.team;d[w].picks??={};d[w].picks[team]={};box.querySelectorAll(`.mb-team-pick[data-team="${CSS.escape(team)}"]`).forEach(x=>d[w].picks[team][x.dataset.i]=x.value);save(d);renderResults();alert(team+"'s picks saved for Week "+w+".");});}
+  function renderResults(){const[d,w]=state(),box=document.getElementById('mb-results'),qs=d[w].questions;if(!qs.length){box.innerHTML='<p>No questions yet.</p>';return;}const rows=TEAMS.map(team=>{let total=0;qs.forEach((q,i)=>{if(q.answer&&d[w].picks?.[team]?.[i]===q.answer)total+=pts(q.difficulty);});return{team,total};}).sort((a,b)=>b.total-a.total);box.innerHTML='<table class="mb-table"><tr><th>Team</th><th>Pick\'em Points</th></tr>'+rows.map(r=>`<tr><td>${esc(r.team)}</td><td class="mb-points">${r.total}</td></tr>`).join('')+'</table>';d[w].scores=Object.fromEntries(rows.map(r=>[r.team,r.total]));save(d);}
+  document.getElementById('mb-add-question').onclick=()=>{const[d,w]=state();d[w].questions.push({text:'',difficulty:'medium',answer:''});save(d);renderQuestions();renderTeams();};
+  document.getElementById('mb-save-questions').onclick=()=>{const[d,w]=state(),box=document.getElementById('mb-question-editor');d[w].questions=[...box.querySelectorAll('.mb-q-text')].map((x,i)=>({text:x.value.trim(),difficulty:box.querySelector(`.mb-q-diff[data-i="${i}"]`).value,answer:box.querySelector(`.mb-q-answer[data-i="${i}"]`).value})).filter(q=>q.text);save(d);renderQuestions();renderTeams();renderResults();alert('Week '+w+' Pick\'ems saved.');};
+  document.getElementById('mb-week').onchange=()=>{renderQuestions();renderTeams();renderResults();};
+  document.getElementById('mb-score-picks').onclick=()=>{renderResults();alert('Pick\'ems scored for Week '+state()[1]+'.');};
+  renderQuestions();renderTeams();renderResults();
+})();
+</script>
+<script>
+/* WEEKLY PICK'EMS */
+const PE_KEY='mirrorballWeeklyPickems2026';
+const PE_COUPLES=[
+  'Ezra & Julia Stiles','Val & Jenna Dewan','Jan & Tatyana Ali','Britt & Taylor Hansen',
+  'Daniella & Ezra Frech','Pasha & Amber Glenn','Rylee & Connor Wood','Hailey & Sarah Nader',
+  'Sharna & Tyler Cameron','Alan & Giada DeLaurentiis','Jenna & Harry Shum Jr.',
+  'Adele & Connor Leavitt','Witney & Guillermo Rodriguez','Mark & Maura Higgins',
+  'Brandon & Ciara Miller','Emma & Jackson Olsen'
+];
+function peLoad(){try{return JSON.parse(localStorage.getItem(PE_KEY)||'{}')}catch(e){return{}}}
+function peSave(d){localStorage.setItem(PE_KEY,JSON.stringify(d))}
+function peEsc(s){return String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
+function pePoints(d){return d==='hard'?5:d==='medium'?3:2}
+function peTeams(){
+  try{
+    if(typeof currentSeason==='function'){
+      const s=currentSeason();
+      if(s && s.teams && s.teams.length) return s.teams.map(t=>t.name);
+    }
+  }catch(e){}
+  return ['JUSTIN','GABBY','MORGAN','TAYLOR','TEAM 5','TEAM 6','TEAM 7'];
+}
+function peWeek(){
+  const v=(document.getElementById('peMainWeek')||document.getElementById('peCommWeek'));
+  return Math.max(1,Number(v?.value||1));
+}
+function peDefaultQuestions(){
+  return [
+    {text:'Who will score the highest?',difficulty:'easy',answer:''},
+    {text:'Who will score the lowest?',difficulty:'easy',answer:''},
+    {text:'Who will be eliminated?',difficulty:'hard',answer:''},
+    {text:'Who will be in the Bottom 2?',difficulty:'medium',answer:''},
+    {text:'Which couple will improve the most from last week?',difficulty:'medium',answer:''}
+  ];
+}
+function peEnsureWeek(w){
+  const d=peLoad();
+  if(!d[w]) d[w]={questions:peDefaultQuestions(),picks:{},scores:{}};
+  if(!Array.isArray(d[w].questions)) d[w].questions=peDefaultQuestions();
+  d[w].picks=d[w].picks||{};
+  d[w].scores=d[w].scores||{};
+  peSave(d); return d;
+}
+function peCoupleOptions(selected=''){
+  return '<option value="">Select couple</option>'+PE_COUPLES.map(c=>`<option value="${peEsc(c)}" ${selected===c?'selected':''}>${peEsc(c)}</option>`).join('');
+}
+function peRenderMain(){
+  const w=peWeek(),d=peEnsureWeek(w),qs=d[w].questions;
+  const qbox=document.getElementById('peMainQuestions');
+  qbox.innerHTML=qs.length?qs.map((q,i)=>`
+    <div class="card" style="margin-top:10px">
+      <strong>${i+1}. ${peEsc(q.text)}</strong>
+      <span class="tag" style="margin-left:8px">${q.difficulty.toUpperCase()} · ${pePoints(q.difficulty)} pts</span>
+    </div>`).join(''):'<p class="empty">No Pick\'ems have been created for this week yet.</p>';
+
+  const teamSelect=document.getElementById('peMainTeam');
+  const teams=peTeams(), current=teamSelect.value;
+  teamSelect.innerHTML=teams.map(t=>`<option value="${peEsc(t)}">${peEsc(t)}</option>`).join('');
+  if(teams.includes(current)) teamSelect.value=current;
+  peRenderMainTeam();
+  peRenderMainResults();
+}
+function peRenderMainTeam(){
+  const w=peWeek(),d=peEnsureWeek(w),qs=d[w].questions,team=document.getElementById('peMainTeam')?.value;
+  const box=document.getElementById('peMainTeamQuestions');
+  if(!team){box.innerHTML='';return}
+  const picks=d[w].picks[team]||{};
+  box.innerHTML=qs.map((q,i)=>`
+    <div class="form3" style="margin-top:10px">
+      <label>${i+1}. ${peEsc(q.text)} (${pePoints(q.difficulty)} pts)
+        <select class="pe-team-answer" data-i="${i}">${peCoupleOptions(picks[i]||'')}</select>
+      </label>
+    </div>`).join('');
+}
+function peSaveMainTeam(){
+  const w=peWeek(),d=peEnsureWeek(w),team=document.getElementById('peMainTeam').value;
+  d[w].picks[team]={};
+  document.querySelectorAll('.pe-team-answer').forEach(el=>d[w].picks[team][el.dataset.i]=el.value);
+  peSave(d); peRenderMainResults();
+  if(typeof toast==='function') toast(team+' Pick\'ems saved.');
+}
+function peRenderMainResults(){
+  const w=peWeek(),d=peEnsureWeek(w),teams=peTeams(),box=document.getElementById('peMainResults');
+  const rows=teams.map(t=>({team:t,total:d[w].scores[t]||0})).sort((a,b)=>b.total-a.total);
+  box.innerHTML='<table class="adminTable"><thead><tr><th>Team</th><th>Pick\'em Points</th></tr></thead><tbody>'+
+    rows.map(r=>`<tr><td>${peEsc(r.team)}</td><td><strong>${r.total}</strong></td></tr>`).join('')+
+    '</tbody></table>';
+}
+function peRenderCommissioner(){
+  const input=document.getElementById('peCommWeek'); if(input) input.value=peWeek();
+  const w=Number(input?.value||1),d=peEnsureWeek(w),qs=d[w].questions,box=document.getElementById('peCommQuestions');
+  box.innerHTML=qs.map((q,i)=>`
+    <div class="card" style="margin-top:10px">
+      <div class="form3">
+        <label>Question ${i+1}<input class="pe-comm-text" data-i="${i}" value="${peEsc(q.text)}"></label>
+        <label>Points
+          <select class="pe-comm-diff" data-i="${i}">
+            <option value="easy" ${q.difficulty==='easy'?'selected':''}>Easy — 3</option>
+            <option value="medium" ${q.difficulty==='medium'?'selected':''}>Medium — 4</option>
+            <option value="hard" ${q.difficulty==='hard'?'selected':''}>Hard — 6</option>
+          </select>
+        </label>
+        <label>Correct Answer
+          <select class="pe-comm-answer" data-i="${i}">${peCoupleOptions(q.answer||'')}</select>
+        </label>
+      </div>
+      <button class="smallbtn danger" style="margin-top:8px" onclick="peDeleteQuestion(${i})">Remove</button>
+    </div>`).join('');
+  peRenderCommissionerResults();
+}
+function peAddQuestion(){
+  const w=Number(document.getElementById('peCommWeek').value||1),d=peEnsureWeek(w);
+  d[w].questions.push({text:'',difficulty:'medium',answer:''});peSave(d);peRenderCommissioner();
+}
+function peDeleteQuestion(i){
+  const w=Number(document.getElementById('peCommWeek').value||1),d=peEnsureWeek(w);
+  d[w].questions.splice(i,1);peSave(d);peRenderCommissioner();
+}
+function peSaveCommissioner(){
+  const w=Number(document.getElementById('peCommWeek').value||1),d=peEnsureWeek(w);
+  const box=document.getElementById('peCommQuestions'),n=box.querySelectorAll('.pe-comm-text').length;
+  d[w].questions=Array.from({length:n},(_,i)=>({
+    text:box.querySelector(`.pe-comm-text[data-i="${i}"]`).value,
+    difficulty:box.querySelector(`.pe-comm-diff[data-i="${i}"]`).value,
+    answer:box.querySelector(`.pe-comm-answer[data-i="${i}"]`).value
+  }));
+  peSave(d);peRenderMain();peRenderCommissioner();
+  if(typeof toast==='function') toast('Week '+w+' Pick\'ems saved.');
+}
+function peScoreCommissioner(){
+  const w=Number(document.getElementById('peCommWeek').value||1),d=peEnsureWeek(w),qs=d[w].questions;
+  peTeams().forEach(team=>{
+    let total=0;
+    qs.forEach((q,i)=>{
+      if(q.answer && d[w].picks?.[team]?.[i]===q.answer) total+=pePoints(q.difficulty);
+    });
+    d[w].scores[team]=total;
+  });
+  peSave(d);peRenderCommissionerResults();peRenderMainResults();
+  if(typeof toast==='function') toast('Week '+w+' Pick\'ems scored.');
+}
+function peRenderCommissionerResults(){
+  const input=document.getElementById('peCommWeek'),box=document.getElementById('peCommResults');
+  if(!input||!box)return;
+  const w=Number(input.value||1),d=peEnsureWeek(w),rows=peTeams().map(t=>({team:t,total:d[w].scores[t]||0})).sort((a,b)=>b.total-a.total);
+  box.innerHTML='<table class="adminTable"><thead><tr><th>Team</th><th>Pick\'em Points</th></tr></thead><tbody>'+
+    rows.map(r=>`<tr><td>${peEsc(r.team)}</td><td><strong>${r.total}</strong></td></tr>`).join('')+
+    '</tbody></table>';
+}
+document.addEventListener('DOMContentLoaded',()=>{
+  const team=document.getElementById('peMainTeam');
+  if(team) team.addEventListener('change',peRenderMainTeam);
+  const mw=document.getElementById('peMainWeek');
+  if(mw) mw.addEventListener('change',peRenderMain);
+  const cw=document.getElementById('peCommWeek');
+  if(cw) cw.addEventListener('change',peRenderCommissioner);
+  peRenderMain(); peRenderCommissioner();
+});
+</script>
+
+
+<script>
+/* MIRRORBALL_PICKEMS_LOCAL_V2 */
+(function(){
+  const KEY='mirrorballWeeklyPickems2026';
+  const COUPLES=['Ezra & Julia Stiles','Val & Jenna Dewan','Jan & Tatyana Ali','Britt & Taylor Hansen','Daniella & Ezra Frech','Pasha & Amber Glenn','Rylee & Connor Wood','Hailey & Sarah Nader','Sharna & Tyler Cameron','Alan & Giada DeLaurentiis','Jenna & Harry Shum Jr.','Adele & Connor Leavitt','Witney & Guillermo Rodriguez','Mark & Maura Higgins','Brandon & Ciara Miller','Emma & Jackson Olsen'];
+  const FALLBACK_TEAMS=['JUSTIN','GABBY','MORGAN','TAYLOR','TEAM 5','TEAM 6','TEAM 7'];
+  const esc=s=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+  const load=()=>{try{return JSON.parse(localStorage.getItem(KEY)||'{}')}catch(e){return{}}};
+  const save=d=>localStorage.setItem(KEY,JSON.stringify(d));
+  const pts=d=>d==='hard'?5:d==='medium'?3:2;
+  function teams(){
+    try{ if(typeof currentSeason==='function'){const s=currentSeason(); if(s?.teams?.length)return s.teams.map(t=>t.name);} }catch(e){}
+    return FALLBACK_TEAMS;
+  }
+  function defaults(){return[
+    {text:'Who will score the highest?',difficulty:'easy',answer:''},
+    {text:'Who will be eliminated?',difficulty:'hard',answer:''},
+    {text:'Who will be in the Bottom 2?',difficulty:'medium',answer:''}
+  ];}
+  function week(w){
+    const d=load(); d[w]??={questions:defaults(),picks:{},scores:{}};
+    d[w].questions??=defaults(); d[w].picks??={}; d[w].scores??={}; save(d); return d;
+  }
+  function opts(sel=''){return '<option value="">Select couple</option>'+COUPLES.map(c=>`<option value="${esc(c)}" ${sel===c?'selected':''}>${esc(c)}</option>`).join('');}
+
+  function renderMain(){
+    const w=Math.max(1,+document.getElementById('peWeek').value||1), d=week(w), qs=d[w].questions, teamEl=document.getElementById('peTeam'), old=teamEl.value;
+    teamEl.innerHTML=teams().map(t=>`<option>${esc(t)}</option>`).join(''); if(teams().includes(old))teamEl.value=old;
+    const picks=d[w].picks[teamEl.value]||{};
+    document.getElementById('peQuestions').innerHTML=qs.length?qs.map((q,i)=>`<div class="card" style="margin-top:10px"><div class="form3"><label style="grid-column:span 2">${i+1}. ${esc(q.text)}<select class="pe-answer" data-i="${i}">${opts(picks[i]||'')}</select></label><div class="tag">${q.difficulty.toUpperCase()} · ${pts(q.difficulty)} pts</div></div></div>`).join(''):'<p class="empty">No Pick\'ems have been created for this week yet.</p>';
+    renderResults();
+  }
+  function saveMain(){
+    const w=Math.max(1,+document.getElementById('peWeek').value||1),d=week(w),team=document.getElementById('peTeam').value;
+    d[w].picks[team]={}; document.querySelectorAll('.pe-answer').forEach(x=>d[w].picks[team][x.dataset.i]=x.value); save(d);
+    document.getElementById('peStatus').textContent=`${team}'s Week ${w} picks saved.`; renderResults();
+  }
+  function renderResults(){
+    const w=Math.max(1,+document.getElementById('peWeek').value||1),d=week(w);
+    const rows=teams().map(t=>({t,s:d[w].scores[t]||0})).sort((a,b)=>b.s-a.s);
+    document.getElementById('peResults').innerHTML='<table class="adminTable"><thead><tr><th>Team</th><th>Pick\'em Points</th></tr></thead><tbody>'+rows.map(r=>`<tr><td>${esc(r.t)}</td><td><strong>${r.s}</strong></td></tr>`).join('')+'</tbody></table>';
+  }
+  function renderComm(){
+    const w=Math.max(1,+document.getElementById('peCommWeek').value||1),d=week(w),qs=d[w].questions;
+    document.getElementById('peCommQuestions').innerHTML=qs.map((q,i)=>`<div class="card" style="margin-top:10px"><div class="form3"><label>Question ${i+1}<input class="pe-q-text" data-i="${i}" value="${esc(q.text)}"></label><label>Points<select class="pe-q-diff" data-i="${i}"><option value="easy" ${q.difficulty==='easy'?'selected':''}>4 points</option><option value="medium" ${q.difficulty==='medium'?'selected':''}>4 points</option><option value="hard" ${q.difficulty==='hard'?'selected':''}>6 points</option></select></label><label>Correct Answer<select class="pe-q-answer" data-i="${i}">${opts(q.answer||'')}</select></label></div><button class="smallbtn danger pe-del" data-i="${i}" type="button">Remove</button></div>`).join('');
+    renderCommResults();
+  }
+  function saveComm(){
+    const w=Math.max(1,+document.getElementById('peCommWeek').value||1),d=week(w),box=document.getElementById('peCommQuestions'),n=box.querySelectorAll('.pe-q-text').length;
+    d[w].questions=Array.from({length:n},(_,i)=>({text:box.querySelector(`.pe-q-text[data-i="${i}"]`).value,difficulty:box.querySelector(`.pe-q-diff[data-i="${i}"]`).value,answer:box.querySelector(`.pe-q-answer[data-i="${i}"]`).value}));
+    save(d);renderMain();renderComm(); if(typeof toast==='function')toast(`Week ${w} Pick'ems saved.`);
+  }
+  function addQ(){const w=Math.max(1,+document.getElementById('peCommWeek').value||1),d=week(w);d[w].questions.push({text:'',difficulty:'medium',answer:''});save(d);renderComm();}
+  function score(){
+    const w=Math.max(1,+document.getElementById('peCommWeek').value||1),d=week(w),qs=d[w].questions;
+    teams().forEach(t=>{let total=0;qs.forEach((q,i)=>{if(q.answer&&d[w].picks[t]?.[i]===q.answer)total+=pts(q.difficulty)});d[w].scores[t]=total;});
+    save(d);renderCommResults();renderResults();if(typeof toast==='function')toast(`Week ${w} Pick'ems scored.`);
+  }
+  function renderCommResults(){
+    const el=document.getElementById('peCommResults');if(!el)return;const w=Math.max(1,+document.getElementById('peCommWeek').value||1),d=week(w);
+    el.innerHTML='<table class="adminTable"><thead><tr><th>Team</th><th>Pick\'em Points</th></tr></thead><tbody>'+teams().map(t=>`<tr><td>${esc(t)}</td><td><strong>${d[w].scores[t]||0}</strong></td></tr>`).join('')+'</tbody></table>';
+  }
+  document.addEventListener('DOMContentLoaded',()=>{
+    document.getElementById('peWeek')?.addEventListener('change',renderMain);
+    document.getElementById('peTeam')?.addEventListener('change',renderMain);
+    document.getElementById('peSaveBtn')?.addEventListener('click',saveMain);
+    document.getElementById('peCommWeek')?.addEventListener('change',renderComm);
+    document.getElementById('peLoadWeek')?.addEventListener('click',renderComm);
+    document.getElementById('peAddQuestion')?.addEventListener('click',addQ);
+    document.getElementById('peSaveQuestions')?.addEventListener('click',saveComm);
+    document.getElementById('peScoreWeek')?.addEventListener('click',score);
+    document.getElementById('peCommQuestions')?.addEventListener('click',e=>{const b=e.target.closest('.pe-del');if(b){const w=Math.max(1,+document.getElementById('peCommWeek').value||1),d=week(w);d[w].questions.splice(+b.dataset.i,1);save(d);renderComm();}});
+    renderMain();renderComm();
+  });
+})();
+</script>
+
+
+<script>
+/* KEEP_TEAMS_ACTIVE_RULE */
+(function(){
+  window.mirrorballTeamStatus = function(activeCouples){
+    const n = Number(activeCouples || 0);
+    return n === 0
+      ? '<span class="tag">No active couples — STILL IN THE GAME</span>'
+      : '<span class="tag">' + n + ' active couple' + (n === 1 ? '' : 's') + '</span>';
+  };
+})();
+</script>
+
+</body>
+</html>

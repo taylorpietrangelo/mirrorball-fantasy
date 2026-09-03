@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Mirrorball Fantasy — Sharable Beta</title>
+<style>
+:root{--navy:#071a36;--blue:#0d4fa6;--sky:#eaf3ff;--ink:#10213d;--line:#d8e3f2;--white:#fff}
+*{box-sizing:border-box}body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,sans-serif;background:linear-gradient(180deg,#eef6ff,#fff);color:var(--ink)}
+.wrap{max-width:1100px;margin:auto;padding:28px}.top{background:var(--navy);color:#fff;padding:22px 28px;border-radius:0 0 22px 22px;box-shadow:0 8px 30px #071a3622}
+.brand{font-size:24px;font-weight:800}.pill{display:inline-block;margin-top:8px;padding:6px 10px;border-radius:999px;background:#ffffff1a;font-size:12px}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:18px;margin-top:22px}.card{background:#fff;border:1px solid var(--line);border-radius:18px;padding:22px;box-shadow:0 8px 25px #10213d0c}
+h1{font-size:42px;line-height:1.05;margin:8px 0 12px}.sub{color:#60708a;line-height:1.6}.btn{display:inline-block;text-decoration:none;border:0;border-radius:12px;padding:12px 16px;font-weight:700;background:var(--blue);color:#fff;margin-top:12px}
+.stat{font-size:30px;font-weight:800}.muted{font-size:13px;color:#6b7b94}.status{padding:12px;border-radius:12px;background:var(--sky);margin-top:14px}
+@media(max-width:760px){.grid{grid-template-columns:1fr}h1{font-size:34px}.wrap{padding:18px}}
+</style>
+</head>
+<body>
+<div class="top"><div class="wrap" style="padding:0"><div class="brand">Mirrorball Fantasy</div><div class="pill">SHARABLE BETA · 2026 SEASON</div></div></div>
+<main class="wrap">
+<section class="card">
+  <div class="muted">DWTS FANTASY LEAGUE</div>
+  <h1>Draft. Dance. Dominate.</h1>
+  <p class="sub">A shared home for the 7-player league — teams, weekly scores, Wildcards, Pick'ems and standings.</p>
+  <div class="status"><strong>Shared mode is ready to connect.</strong><br>Once the database is connected, your friends will be able to submit their own Pick'ems from their phones or computers.</div>
+  <a class="btn" href="mirrorball-local-reference.html">Open Local Version</a>
+</section>
+<div class="grid">
+  <div class="card"><div class="muted">PLAYERS</div><div class="stat">7</div><p class="sub">Each player has their own fantasy team.</p></div>
+  <div class="card"><div class="muted">COUPLES</div><div class="stat">16</div><p class="sub">3 drafted couples per team plus 5 Wildcards.</p></div>
+  <div class="card"><div class="muted">PICK'EMS</div><div class="stat">5 / week</div><p class="sub">Commissioner can customize the questions every week.</p></div>
+  <div class="card"><div class="muted">SHARED DATA</div><div class="stat">Ready</div><p class="sub">Supabase will keep everyone's picks and league results synchronized.</p></div>
+</div>
+</main>
+</body>
+</html>
