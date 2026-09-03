@@ -1,0 +1,5 @@
+window.MIRRORBALL_CONFIG = {
+  supabaseUrl: "https://xwtmkhcxvjdttpgxahlu.supabase.co",
+  supabasePublishableKey: "sb_publishable_vZ8hQnY1nfees5JwKvIMkA_NLhPzu8K",
+  leagueId: "dwts-2026"
+};
