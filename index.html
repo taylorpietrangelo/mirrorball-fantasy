@@ -56,7 +56,13 @@ input,select{width:100%;padding:11px;border:1px solid var(--line);border-radius:
 
 <!-- MIRRORBALL_SUPABASE_CLIENT -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="config.js"></script>
+<script>
+window.MIRRORBALL_CONFIG = {
+  supabaseUrl: "https://xwtmkhcxvjdttpgxahlu.supabase.co",
+  supabasePublishableKey: "sb_publishable_vZ8hQnY1nfees5JwKvIMkA_NLhPzu8K",
+  leagueId: "dwts-2026"
+};
+</script>
 <script>
 window.mirrorballSupabase = null;
 if (window.supabase && window.MIRRORBALL_CONFIG &&
