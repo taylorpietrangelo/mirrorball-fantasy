@@ -142,7 +142,7 @@ $('saveElim').onclick=async()=>{const cid=$('elimCouple').value,cid2=commDoubleE
 $('saveQuestions').onclick=async()=>{const w=Number($('qWeek').value||1);const qs=[1,2,3,4].map(i=>({league_id:cfg.leagueId,week:w,question_order:i,question:$('q'+i).value.trim(),points:5,locked:false})).filter(x=>x.question);if(qs.length!==4)return msg('commMsg','Enter all four questions.');await sb.from('pickem_questions').delete().eq('league_id',cfg.leagueId).eq('week',w);const {error}=await sb.from('pickem_questions').insert(qs);if(error)msg('commMsg',error.message);else{msg('commMsg','Four questions published.',true);await refresh()}};
 async function renderSubmissionTracker(w,qweek){
   const ids=(qweek||[]).map(q=>q.id);
-  if(!ids.length){$('submissionTracker').innerHTML='<div class=\"empty\">Publish the four Pick'em questions first.</div>';return}
+  if(!ids.length){$('submissionTracker').innerHTML='<div class=\"empty\">Publish the four Pick&amp;#39;em questions first.</div>';return}
   const {data:picks,error}=await sb.from('pickem_picks').select('question_id,player_id,answer').in('question_id',ids);
   if(error){$('submissionTracker').innerHTML='<div class=\"error\">'+esc(error.message)+'</div>';return}
   const {data:epicks}=await sb.from('elimination_picks').select('player_id,pick_1,pick_2').eq('league_id',cfg.leagueId).eq('week',w);
