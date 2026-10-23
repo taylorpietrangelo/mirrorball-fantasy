@@ -91,13 +91,19 @@ button,input,select{font:inherit}button{cursor:pointer}.shell{min-height:100vh;d
 .elim-card{border:2px solid var(--line)}
 .elim-card h2{font-size:20px}
 
-/* Mobile-first Pick'em answer cards */
+/* Pick'em answer cards styled to match the supplied reference */
 .answer-choice-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:10px}
-.answer-choice{position:relative;display:flex;align-items:center;justify-content:center;min-height:66px;padding:10px 7px;border:1px solid var(--line);border-radius:12px;background:#fff;text-align:center;font-size:13px;font-weight:750;line-height:1.25;overflow-wrap:anywhere;cursor:pointer;transition:background .15s,border-color .15s,box-shadow .15s}
-.answer-choice input{position:absolute;opacity:0;width:1px;height:1px;pointer-events:none}
-.answer-choice:has(input:checked){background:#eaf2ff;border:2px solid var(--blue);color:#164e96;box-shadow:0 0 0 2px #0d4fa610}
-.answer-choice:has(input:disabled){opacity:.65;cursor:not-allowed}
+.answer-choice{position:relative;display:grid;grid-template-rows:52px auto;align-items:stretch;gap:8px;min-height:128px;padding:8px;border:1px solid #292929;border-radius:18px;background:#000;color:#f4f4f4;text-align:center;font-size:14px;font-weight:600;line-height:1.3;overflow-wrap:anywhere;cursor:pointer;transition:background .15s,border-color .15s}
+.answer-choice .choice-indicator{display:flex;align-items:center;justify-content:center;width:100%;height:52px;border-radius:13px;background:#fff}
+.answer-choice input{appearance:none;-webkit-appearance:none;position:relative;opacity:1;pointer-events:auto;width:20px;height:20px;margin:0;border:0;border-radius:50%;background:#64748b;cursor:pointer;flex:0 0 auto}
+.answer-choice input[type=checkbox]{border-radius:5px}
+.answer-choice input:checked{background:transparent;border:2px solid var(--blue)}
+.answer-choice input:checked:after{content:'✓';position:absolute;inset:-2px;display:grid;place-items:center;color:var(--blue);font-size:15px;font-weight:900}
+.answer-choice:has(input:checked){background:#e8f1ff;border:1px solid #d5e5ff;color:#173d78}
+.answer-choice:has(input:disabled){cursor:not-allowed;opacity:.82}
 .answer-choice:focus-within{outline:3px solid #8bb8f0;outline-offset:2px}
+.answer-choice span{display:block;padding:0 2px}
+@media(max-width:600px){.answer-choice-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}.answer-choice{grid-template-rows:44px auto;min-height:102px;padding:6px;border-radius:14px;font-size:12px}.answer-choice .choice-indicator{height:44px;border-radius:11px}}
 .pick-save-modal{position:fixed;inset:0;z-index:300;display:grid;place-items:center;padding:18px;background:#071a3680}
 .pick-save-dialog{width:min(420px,100%);background:#fff;border-radius:20px;padding:26px 22px;text-align:center;box-shadow:0 24px 80px #0004}
 .pick-save-icon{width:56px;height:56px;border-radius:50%;display:grid;place-items:center;margin:0 auto 14px;background:#e7f6ef;color:var(--good);font-size:28px;font-weight:900}
@@ -160,7 +166,7 @@ async function renderPickems(){
    const selected=parseAnswers(byQ[q.id]);
    const multi=type==='Multiple Answers';
    const inputType=multi?'checkbox':'radio';
-   const choices=answerCouples.map(c=>`<label class="answer-choice"><input type="${inputType}" name="answer-${q.id}" data-q="${q.id}" value="${esc(c.name)}" ${selected.includes(c.name)?'checked':''} ${q.locked?'disabled':''}><span>${esc(c.name)}</span></label>`).join('');
+   const choices=answerCouples.map(c=>`<label class="answer-choice"><div class="choice-indicator"><input type="${inputType}" name="answer-${q.id}" data-q="${q.id}" value="${esc(c.name)}" ${selected.includes(c.name)?'checked':''} ${q.locked?'disabled':''} aria-label="${esc(coupleDisplayName(c.name))}"></div><span>${esc(coupleDisplayName(c.name))}</span></label>`).join('');
    return `<div class="pick"><b>${q.question_order}. ${esc(q.question)}</b><div class="answer-type">${esc(type)}${multi?' · select all that apply':''}</div><div class="answer-choice-grid">${choices||'<div class="empty">No active couples available.</div>'}</div>${multi?'<div class="multi-help">Tap every answer you think is correct.</div>':''}${q.locked?'<span class="tiny">Locked</span>':''}</div>`;
  }).join(''):'<div class="empty">No questions have been published for this week yet.</div>';
  const activeCouples=couples.filter(c=>c.status!=='Eliminated');
