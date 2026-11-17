@@ -262,7 +262,7 @@ function setupCommissionerWeeks(){const ws=commissionerWeeks();const val=Number(
 function commTab(tab){document.querySelectorAll('.comm-tab').forEach(x=>x.classList.add('hidden'));document.querySelectorAll('[data-commtab]').forEach(x=>x.classList.toggle('active',x.dataset.commtab===tab));$(tab==='scores'?'commScoresTab':tab==='elimination'?'commEliminationTab':tab==='questions'?'commQuestionsTab':tab==='dances'?'commDanceAssignmentsTab':'commOverviewTab').classList.remove('hidden');if(tab==='overview')renderCommissionerOverview();if(tab==='dances')renderDanceAssignments(Number($('commWeek').value||activeWeek||1))}
 async function renderCommissioner(){if(player.role!=='commissioner')return;const {data:scoreWeekRows}=await sb.from('dances').select('week').eq('league_id',cfg.leagueId);window._commissionerDanceWeeks=(scoreWeekRows||[]).map(x=>x.week);setupCommissionerWeeks();const w=Number($('commWeek').value||1);$('scoreWeekDisplay').textContent=`Week ${w}`;$('scoreWeekDisplay').textContent=`Week ${w}`;$('qWeek').value=w;const allOpts=couples.filter(c=>coupleAvailableForWeek(c,w)).map(c=>`<option value="${c.id}">${esc(coupleDisplayName(c.name))}</option>`).join('');$('scoreCouple').innerHTML=allOpts;renderGroupParticipants();const active=couples.filter(c=>coupleAvailableForWeek(c,w));const activeOpts=active.map(c=>`<option value="${c.id}">${esc(coupleDisplayName(c.name))}</option>`).join('');$('elimCouple').innerHTML=activeOpts;$('elimCouple2').innerHTML=activeOpts;await renderCommissionerWeek(w);await renderDanceAssignments(w)}
 
-async let dancePreviewFilter='All';
+let dancePreviewFilter='All';
 document.querySelectorAll('[data-dance-filter]').forEach(btn=>btn.addEventListener('click',()=>{dancePreviewFilter=btn.dataset.danceFilter;document.querySelectorAll('[data-dance-filter]').forEach(x=>x.classList.toggle('active',x===btn));renderDancePreview()}));
 function danceCategory(style){const x=String(style||'').toLowerCase();if(/salsa|cha cha|chacha|rumba|samba|paso|jive|jazz|contemporary|afro|argentine|mambo/.test(x))return 'Latin';if(/freestyle|relay|marathon|team|trio|instant|fusion|disco|special/.test(x))return 'Specialty';return 'Ballroom'}
 async function renderDancePreview(){
@@ -270,7 +270,7 @@ async function renderDancePreview(){
   const w=Number(activeWeek||1);$('dancePreviewWeek').textContent=String(w);
   let rows=(danceAssignments||[]).filter(a=>a.published&&Number(a.week)===w).sort((a,b)=>String(a.couples?.name||'').localeCompare(String(b.couples?.name||'')));
   if(dancePreviewFilter!=='All')rows=rows.filter(a=>danceCategory(a.dance_style)===dancePreviewFilter);
-  if(!rows.length){box.innerHTML='<div class="empty">'+(danceAssignments||[]).some(a=>a.published&&Number(a.week)===w)?'No assignments in this category yet.':'Upcoming assignments will appear here once the commissioner publishes them.'+'</div>';return}
+  if(!rows.length){const hasWeek=(danceAssignments||[]).some(a=>a.published&&Number(a.week)===w);box.innerHTML='<div class="empty">'+(hasWeek?'No assignments in this category yet.':'Upcoming assignments will appear here once the commissioner publishes them.')+'</div>';return}
   const {data:history,error}=await sb.from('dances').select('couple_id,week,dance_name,total,created_at,performance_type').eq('league_id',cfg.leagueId);
   box.innerHTML=renderDancePreviewRows(rows,error?[]:(history||[]),!!error);
 }
