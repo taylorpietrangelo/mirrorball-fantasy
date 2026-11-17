@@ -134,7 +134,17 @@ button,input,select{font:inherit}button{cursor:pointer}.shell{min-height:100vh;d
 @media(max-width:900px){.dashboard-layout{grid-template-columns:1fr}.dashboard-team{grid-template-columns:1fr}.dashboard-roster{border-left:0;border-top:1px solid #ffffff45;padding:14px 0 0}.performance-lower{grid-template-columns:1fr 1fr}}
 @media(max-width:600px){.performance-heading{display:block}.dance-filters{justify-content:flex-start;margin-top:14px}.performance-center{padding:16px}.dance-preview-subhead{display:block}.dance-preview-subhead .tiny{display:block;margin-top:6px}.performance-lower{grid-template-columns:1fr}.dashboard-team{padding:20px}}
 </style>
-</head>
+<style>
+.style-compare-picker{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:700;color:var(--muted)}
+.style-compare-picker select{padding:9px 12px;border:1px solid var(--line);border-radius:10px;background:#fff;color:var(--ink);min-width:170px}
+.style-compare-table{width:100%;border-collapse:collapse;font-size:14px}
+.style-compare-table th,.style-compare-table td{text-align:left;padding:11px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+.style-compare-table th{color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.04em}
+.style-compare-table td.score{text-align:right;font-weight:800;white-space:nowrap}
+.style-compare-table .score-list{font-weight:500;color:var(--muted);font-size:12px;line-height:1.7}
+.style-compare-table tr:first-child td:first-child{font-weight:800}
+@media(max-width:650px){.style-compare-picker{width:100%;justify-content:space-between}.style-compare-picker select{flex:1;min-width:0}.style-compare-table{font-size:12px}.style-compare-table th,.style-compare-table td{padding:9px 5px}}
+</style></head>
 <body>
 <div id="weekCompleteSuccess" class="week-complete-overlay" role="dialog" aria-modal="true" aria-labelledby="weekCompleteTitle" aria-describedby="weekCompleteDescription">
   <div class="week-complete-dialog">
@@ -180,6 +190,13 @@ button,input,select{font:inherit}button{cursor:pointer}.shell{min-height:100vh;d
     <div class="card"><div class="row"><h3 style="margin:0;font-size:18px">Weekly Couple Leaderboard</h3><span class="status-pill" id="pcWeekLabel">Latest week</span></div><div class="muted">Combined judges’ scores and bonus points by couple.</div><div id="weeklyCoupleLeaderboard" style="margin-top:8px"><div class="empty">Loading weekly scores…</div></div></div>
     <div class="card"><h3 style="margin:0;font-size:18px">Season Performance</h3><div class="muted">Cumulative judges’ scores, bonuses, and dance-style trends.</div><div id="seasonCouplePerformance" style="margin-top:8px"><div class="empty">Loading season stats…</div></div></div>
     <div class="card"><h3 style="margin:0;font-size:18px">Elimination Tracker</h3><div class="muted">Official eliminations recorded by week.</div><div id="eliminationTracker" style="margin-top:8px"><div class="empty">Loading elimination history…</div></div><div class="tiny" style="margin-top:10px">Only confirmed eliminations are shown; bottom-two/three appearances are not currently stored.</div></div>
+  </div>
+  <div class="card dance-style-compare" style="margin-top:18px">
+    <div class="row" style="align-items:center;gap:14px;flex-wrap:wrap">
+      <div><h3 style="margin:0;font-size:19px">Dance Style Comparison</h3><div class="muted">Compare how every couple has scored in the same dance style.</div></div>
+      <label class="style-compare-picker">Compare style <select id="styleComparisonSelect"><option value="">Choose a dance style…</option></select></label>
+    </div>
+    <div id="styleComparisonContent" style="margin-top:14px"><div class="pc-empty">Choose a dance style to compare the couples.</div></div>
   </div>
 </div>
 </section>
@@ -303,6 +320,24 @@ async function renderPerformanceCenter(){
     dances.forEach(d=>{const id=d.couple_id;if(!season[id])season[id]={name:d.couples?.name||'Couple',points:0,judgeTotal:0,count:0,styles:{}};season[id].points+=Number(d.total||0)+Number(d.bonus||0);season[id].judgeTotal+=Number(d.total||0);season[id].count++;const style=String(d.dance_name||'Performance');season[id].styles[style]=(season[id].styles[style]||0)+1;});
     const seasonRows=Object.values(season).sort((a,b)=>b.points-a.points);
     seasonBox.innerHTML=seasonRows.length?seasonRows.slice(0,6).map((x,i)=>{const favorite=Object.entries(x.styles).sort((a,b)=>b[1]-a[1])[0];return '<div class="pc-row"><div class="pc-main"><b><span class="pc-rank">#'+(i+1)+'</span>'+esc(coupleDisplayName(x.name))+'</b><span class="pc-sub">'+x.count+' performance'+(x.count===1?'':'s')+' · '+(favorite?esc(favorite[0]):'No dance style')+' most often</span></div><div class="pc-value">'+x.points.toFixed(1).replace(/\.0$/,'')+' pts<span class="pc-sub">Avg '+(x.judgeTotal/x.count).toFixed(1)+'</span></div></div>';}).join(''):'<div class="pc-empty">Season performance stats will appear after scores are entered.</div>';
+    const styleSelect=$('styleComparisonSelect'),styleBox=$('styleComparisonContent');
+    if(styleSelect&&styleBox){
+      const styles=[...new Set(dances.map(d=>String(d.dance_name||'').trim()).filter(Boolean))].sort((a,b)=>a.localeCompare(b));
+      const priorStyle=styleSelect.value;
+      styleSelect.innerHTML='<option value="">Choose a dance style…</option>'+styles.map(x=>'<option value="'+esc(x)+'">'+esc(x)+'</option>').join('');
+      styleSelect.value=styles.includes(priorStyle)?priorStyle:(styles[0]||'');
+      const renderStyleComparison=()=>{
+        const selected=styleSelect.value;
+        if(!selected){styleBox.innerHTML='<div class="pc-empty">No dance styles have been scored yet.</div>';return}
+        const matching=dances.filter(d=>String(d.dance_name||'').trim().toLowerCase()===selected.toLowerCase());
+        const groups={};
+        matching.forEach(d=>{const id=d.couple_id;if(!groups[id])groups[id]={name:d.couples?.name||'Couple',scores:[],weeks:[]};groups[id].scores.push(Number(d.total||0));groups[id].weeks.push(Number(d.week)||0)});
+        const rows=Object.values(groups).map(x=>({ ...x,average:x.scores.reduce((a,b)=>a+b,0)/x.scores.length,best:Math.max(...x.scores)})).sort((a,b)=>b.average-a.average);
+        styleBox.innerHTML=rows.length?'<div class="muted" style="margin-bottom:8px">Ranked by average judges’ score. Each entry shows the individual scores recorded for that style.</div><div class="dance-preview-wrap"><table class="style-compare-table"><thead><tr><th>Couple</th><th>Performances</th><th>Average</th><th>Best</th><th>Scores by week</th></tr></thead><tbody>'+rows.map((x,i)=>'<tr><td>'+(i===0?'<b>#1 · ':'')+esc(coupleDisplayName(x.name))+(i===0?'</b>':'')+'</td><td>'+x.scores.length+'</td><td class="score">'+x.average.toFixed(1)+'</td><td class="score">'+x.best.toFixed(1)+'</td><td><div class="score-list">'+x.scores.map((score,j)=>'Wk '+x.weeks[j]+': '+score.toFixed(1)).join(' · ')+'</div></td></tr>').join('')+'</tbody></table></div>':'<div class="pc-empty">No scores have been entered for '+esc(selected)+' yet.</div>';
+      };
+      styleSelect.onchange=renderStyleComparison;
+      renderStyleComparison();
+    }
   }
   if(elimRes.error)elimBox.innerHTML='<div class="pc-empty">Elimination history could not be loaded.</div>';
   else{const elims=elimRes.data||[];elimBox.innerHTML=elims.length?elims.slice(0,7).map(x=>'<div class="pc-row"><div class="pc-main"><b>'+esc(coupleDisplayName(x.couples?.name||'Couple'))+'</b><span class="pc-sub">Week '+Number(x.week)+(x.note?' · '+esc(x.note):'')+'</span></div><span class="status-pill">Eliminated</span></div>').join(''):'<div class="pc-empty">No eliminations have been recorded yet.</div>';}
